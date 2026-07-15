@@ -1,0 +1,127 @@
+@import 'colors';
+
+.app-layout {
+    min-height: 100vh;
+    background-color: $bg-page;
+    display: flex;
+}
+
+.sidebar {
+    background-color: #fff;
+    border-right: 1px solid $border-color;    
+    flex-direction: column;
+    padding: 20px 2%;
+    height: 100vh;
+    gap: 20px;
+    display: flex;
+
+    transform: translateX(-100%);
+    position: absolute;
+    transition: transform 0.2s ease-in-out;
+
+    &.open {        
+        position: static;
+        transform: translateX(0);
+    }
+
+    .brand {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: $text-main;
+        span { color: $primary-color; }
+    }
+
+    .user-info {
+        background: $user-name-background;
+        padding: 15px;
+        border-radius: 10px;
+
+        .name {
+            font-weight: 700;
+            color: $text-main;
+        }
+        .level {
+            font-size: 0.9rem;
+            color: $primary-color;
+            font-weight: 600;
+        }
+    }
+
+    .menu {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        a {
+            display: block;
+            padding: 15px;
+            color: $text-secondary;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+
+            &:hover {
+                background-color: rgba($primary-color, 0.05);
+                color: $text-main;
+            }
+
+            &.active {
+                background-color: rgba($primary-color, 0.15);
+                color: $primary-color;
+            }
+        }
+    }
+
+    .footer {
+        padding-top: 20px;
+        border-top: 1px solid $border-color;
+
+        .btn-logout {
+            font-size: 0.9rem;
+            width: 100%;
+            text-align: left;
+            padding: 15px;
+            color: $error;
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.2s;
+
+            &:hover { background-color: rgba($error, 0.1); }
+        }
+    }
+}
+
+.main-wrapper {    
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    header {
+        background-color: #fff;
+        padding: 20px 30px;
+        border-bottom: 1px solid $border-color;
+
+        p.content {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: $text-main;
+
+            .symbol-menu {
+                margin-right: 10px;
+            }
+        }
+        .symbol-menu {
+            cursor: pointer;
+            user-select: none;
+        }
+    }
+
+    main.content {
+        padding: 20px 2%;
+        flex: 1;
+    }
+}
