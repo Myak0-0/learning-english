@@ -16,9 +16,11 @@
     }
 }
 
-.accent-word {
-    color: $primary-color;
-    font-weight: 800;
+.accent-word {    
+    font-weight: 600;
+    &.one {color: $dialogue-one;}
+    &.two {color: $dialogue-two;}
+    &.three {color: $dialogue-three;}
 }
 
 .theory-section {

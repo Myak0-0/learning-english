@@ -39,7 +39,7 @@ class LessonController extends Controller
                 ->select('sections.*')
                 ->where('sections.parent_id', $parentId)
                 ->where('user_rights.user_id', $currentUser->id)
-                ->orderBy('order')
+                ->orderBy('user_rights.created_at', 'desc')
                 ->get();
         }
 

@@ -6,8 +6,9 @@ import TextPage from "./TaskParts/Text";
 import ImagePage from "./TaskParts/Image";
 import AudioPage from "./TaskParts/Audio";
 import VideoPage from "./TaskParts/Video";
+import DialoguePage from "./TaskParts/DialoguePage";
 
-const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, lastUpdated }) => {
+const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, lastUpdated, formatTheoryText }) => {
     const [userAnswers, setUserAnswers] = useState({});    
         
     const [shakingButtons, setShakingButtons] = useState({});
@@ -303,6 +304,14 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                         shakingButtons={shakingButtons}
                         answerStates={answerStates}
                         errorHistory={errorHistory}/>
+                );
+            }
+            if (mediaType === 'dialogue') {
+                return (
+                    <DialoguePage 
+                        key={task.id} 
+                        task={task} taskNumber={taskNumber}
+                        formatTheoryText={formatTheoryText}/>
                 );
             }
             if (mediaType === 'image') {

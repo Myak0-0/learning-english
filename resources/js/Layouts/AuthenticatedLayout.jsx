@@ -137,53 +137,54 @@ const AuthenticatedLayout = ({ header, children }) => {
                             <span className='symbol-menu' onClick={() => setMenuIsOpen(!menuIsOpen)}>{menuIsOpen ? ('⬅') : ('☰')}</span>
                             <span>{header}</span>
                         </div>
+                        
+                        <div ref={searchContainerRef}>
+                            <img src={search_icon} alt="search" className='search-icon'
+                                onClick={() => setMobileSearch(!mobileSearch)}/>
 
-                        <img src={search_icon} alt="search" className='search-icon'
-                            onClick={() => setMobileSearch(!mobileSearch)}
-                            ref={searchContainerRef}/>
-
-                        <div className={`${mobileSearch ? 'active' : ''} search`} ref={searchContainerRef}>                            
-                            <input type="text" placeholder='Поиск слов' 
-                                onChange={(e) => setSearchQuery(e.target.value)} 
-                                onFocus={() => setIsFocused(true)}/>
-                                
-                            {isFocused && (
-                                searchResults.length > 0 ? (
-                                    <div className='list'>
-                                        {searchResults.map((word) => (
-                                            <div key={word.id} className='search-word'>                                            
-                                                <p className='word-name'>{word.name}</p>
-                                                
-                                                <div className='actions'>
-                                                    <button className="btn-circle play" onClick={() => playAudio(word.audio)} title="Послушать">
-                                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                                    </button>
-
-                                                    {word.time_of_repeatings && word.time_of_repeatings.length > 0 ? (
-                                                        <button className="btn-circle delete" title="Удалить из слов" onClick={() => deleteWord(word.id)}>
-                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">     
-                                                                <line x1="18" y1="6" x2="6" y2="18"></line> 
-                                                                <line x1="6" y1="6" x2="18" y2="18"></line> 
-                                                            </svg> 
-                                                        </button>                            
-                                                    ) : (
-                                                        <button className="btn-circle add" title="Добавить в свои слова" onClick={() => addWords([word.id])}>
-                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                            </svg>
+                            <div className={`${mobileSearch ? 'active' : ''} search`}>
+                                <input type="text" placeholder='Поиск слов' 
+                                    onChange={(e) => setSearchQuery(e.target.value)} 
+                                    onFocus={() => setIsFocused(true)}/>
+                                    
+                                {isFocused && (
+                                    searchResults.length > 0 ? (
+                                        <div className='list'>
+                                            {searchResults.map((word) => (
+                                                <div key={word.id} className='search-word'>                                            
+                                                    <p className='word-name'>{word.name}</p>
+                                                    
+                                                    <div className='actions'>
+                                                        <button className="btn-circle play" onClick={() => playAudio(word.audio)} title="Послушать">
+                                                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                                         </button>
-                                                    )}
+
+                                                        {word.time_of_repeatings && word.time_of_repeatings.length > 0 ? (
+                                                            <button className="btn-circle delete" title="Удалить из слов" onClick={() => deleteWord(word.id)}>
+                                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">     
+                                                                    <line x1="18" y1="6" x2="6" y2="18"></line> 
+                                                                    <line x1="6" y1="6" x2="18" y2="18"></line> 
+                                                                </svg> 
+                                                            </button>                            
+                                                        ) : (
+                                                            <button className="btn-circle add" title="Добавить в свои слова" onClick={() => addWords([word.id])}>
+                                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                                </svg>
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className='list empty'>
-                                        <p>----------</p>
-                                    </div>
-                                )
-                            )}
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className='list empty'>
+                                            <p>----------</p>
+                                        </div>
+                                    )
+                                )}
+                            </div>
                         </div>
                     </header>
                 )}

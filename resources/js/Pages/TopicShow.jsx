@@ -37,12 +37,21 @@ const TopicShow = ({ topic, currentPage, currentUserId, listIds, lastUpdated }) 
 
     const formatTheoryText = (text) => {
         if (!text) return '';                            
-        const parts = text.split(/(\%[^%]+\%)/g);
+        const parts = text.split(/(\%[^%]+\%|\@[^@]+\@|\#[^#]+\#)/g);
         
         return parts.map((part, index) => {
             if (part.startsWith('%') && part.endsWith('%')) {
                 const cleanWord = part.slice(1, -1);
-                return <span key={index} className="accent-word">{cleanWord}</span>;
+                return <span key={index} className="accent-word one">{cleanWord}</span>;
+            }
+            if (part.startsWith('@') && part.endsWith('@')) {
+                const cleanWord = part.slice(1, -1);
+                return <span key={index} className="accent-word two">{cleanWord}</span>;
+            }
+
+            if (part.startsWith('#') && part.endsWith('#')) {
+                const cleanWord = part.slice(1, -1);
+                return <span key={index} className="accent-word three">{cleanWord}</span>;
             }
             return part;
         });
@@ -91,7 +100,7 @@ const TopicShow = ({ topic, currentPage, currentUserId, listIds, lastUpdated }) 
                 {topic.tasks.length > 0 && (
                 <section className="tasks-section">                    
                     <TasksPage tasks={topic.tasks} currentUserId={currentUserId} command={handleTheoryAudioPlay} 
-                               listIds={listIds} lastUpdated={lastUpdated}/>
+                               listIds={listIds} lastUpdated={lastUpdated} formatTheoryText={formatTheoryText}/>
                 </section>
                 )}
 

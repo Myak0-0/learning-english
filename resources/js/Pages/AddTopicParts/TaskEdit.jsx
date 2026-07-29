@@ -118,7 +118,6 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
 
         axios.post('/section/task-block/delete', { task_id: taskId })
             .then(() => {
-                setErrorMessage("Задание успешно удалено!");
                 router.reload();
             })
             .catch(err => console.error("Ошибка удаления карточки:", err));
@@ -250,10 +249,14 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
                             <div className="form-item-box">
                                 <label>Контент вопроса:</label>
                                 
-                                {(mediaTypeName === "text" || mediaTypeName === "video") && (
+                                {(mediaTypeName === "text" || mediaTypeName === "video" || mediaTypeName === "dialogue") && (
                                     <input 
                                         type="text"
-                                        placeholder="Yesterday I (___) at home."
+                                        placeholder={
+                                            mediaTypeName === 'text'     ? ("Yesterday I (___) at home.") : 
+                                            mediaTypeName === 'dialogue' ? ('%text% @text@ #text#') :
+                                                                           ('https://...')
+                                        }
                                         value={question.content}
                                         onChange={(e) => handleQuestionContentChange(qIdx, e.target.value)}
                                         required
