@@ -216,8 +216,14 @@ class AddTopicController extends Controller
         } 
         elseif ($validated['type'] === 'image' && $request->hasFile('file')) {            
             $file = $request->file('file');
-            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('images/theory/'), $fileName);
+            $fileName = $this->processAndConvertImage($file, time() . '_' . rand(1000, 9999) . '.', 'theory');
+            
+            if (!$fileName) {
+                return response()->json([
+                    'success' => $qData, 
+                    'message' => 'No file'
+                ], 500);
+            }
             
             $contentData = ['content' => $fileName];
         } 
@@ -312,13 +318,19 @@ class AddTopicController extends Controller
                         ], 500);
                     }
 
-                    $file = $request->file("questions.{$qIndex}.file");
-                    
-                    $fileName = time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
+                    $file = $request->file("questions.{$qIndex}.file");                                        
                     
                     if ($validated['media_type'] === 'image') {
-                        $file->move(public_path('images/task'), $fileName);
+                        $fileName = $this->processAndConvertImage($file, time() . '_' . rand(1000, 9999) . '.', 'task');
+                        
+                        if (!$fileName) {
+                            return response()->json([
+                                'success' => $qData, 
+                                'message' => 'No file'
+                            ], 500);
+                        }
                     } else {
+                        $fileName = time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
                         $file->move(public_path('audios'), $fileName);
                     }
                     
@@ -382,6 +394,64 @@ class AddTopicController extends Controller
             ], 500);
         }
     }
+
+    private function processAndConvertImage($sourceFile, $prefix, $folder)
+    {
+        if ($folder === 'task')
+            $destinationDir = public_path('images/task');
+        else if ($folder === 'theory')
+            $destinationDir = public_path('images/theory');
+        else {
+            return null;
+        }
+
+        if (!file_exists($destinationDir)) {
+            mkdir($destinationDir, 0777, true);
+        }
+
+        $originalExtension = strtolower($sourceFile->getClientOriginalExtension());
+        
+        $tempName = $prefix . $originalExtension;
+        $sourceFile->move($destinationDir, $tempName);
+        
+        $fullSourcePath = $destinationDir . '/' . $tempName;
+
+        if (function_exists('imagecreatefromjpeg') && function_exists('imagewebp')) {
+            try {
+                if ($originalExtension === 'jpeg' || $originalExtension === 'jpg') {
+                    $image = @imagecreatefromjpeg($fullSourcePath);
+                } elseif ($originalExtension === 'png') {
+                    $image = @imagecreatefrompng($fullSourcePath);
+                    if ($image) {
+                        imagepalettetotruecolor($image);
+                        imagealphablending($image, true);
+                        imagesavealpha($image, true);
+                    }
+                } else {
+                    $image = false;
+                }
+
+                if ($image !== false) {
+                    $webpName = str_replace('.' . $originalExtension, '.webp', $tempName);
+                    $fullWebpPath = $destinationDir . '/' . $webpName;
+
+                    $result = imagewebp($image, $fullWebpPath, 80);
+                    imagedestroy($image);
+
+                    if ($result && file_exists($fullWebpPath)) {
+                        unlink($fullSourcePath);
+                        return $webpName; 
+                    }
+                }
+            } catch (\Exception $e) {
+
+            }
+        }
+
+        return $tempName;
+    }
+
+
 
     public function task_block_delete(Request $request) {
         $this->check_admin($request);
