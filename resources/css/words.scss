@@ -1,0 +1,302 @@
+@import 'colors.scss';
+
+.words-page {
+  background-color: $bg-page;  
+  margin: 0 2%;
+  color: $text-main;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .welcome-words {
+        h3 {
+            font-size: 1.2rem;
+            color: $text-main;
+            margin-bottom: 5px;
+        }
+        p {
+            color: $text-secondary;
+        }
+    }
+
+  .admin-panel {
+    display: flex;    
+    gap: 15px;
+
+    button {
+      background-color: rgba($primary-color, 0.05);
+      color: $primary-color;
+      border: 1px solid $border-color;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: $primary-color;
+        color: white;
+      }
+    }
+  }
+
+  .categories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .item {
+      background: white;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: box-shadow 0.2s ease;
+
+      &:hover { 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-color: rgba(0, 0, 0, 0.15);
+      }
+
+      > .header {
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        font-weight: 600;
+
+        .arrow-icon {
+          color: $text-main;
+          font-size: 0.8rem;
+          transition: transform 0.2s ease;
+          display: block;
+        }
+
+        .btn-category-name {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .learn-word {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          button {
+            font-size: 1rem;
+            border: none;
+            background: none;
+            color: $primary-color;
+            cursor: pointer;
+            font-weight: 600;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+
+      &.active {
+        .header .arrow-icon { transform: rotate(180deg); }        
+      }
+    }
+  }
+
+  .category-content {
+    padding: 20px;
+    background-color: $bg-page;
+    border-top: 1px solid $border-color;
+
+    .no-words-text { color: $text-secondary; font-style: italic; }
+
+    .words-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 10px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid $border-color;
+      padding: 10px 16px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .foreign { font-weight: 600; color: $text-main; }
+        .separator { color: $text-secondary; }
+        .translation { color: $text-secondary; }
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+    }
+  }
+  
+  .btn-circle {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    svg { width: 1rem; height: 1rem; }
+
+    &.play {
+      background-color: rgba($primary-color, 0.15);
+      color: $primary-color;
+      &:hover { background-color: $primary-color; color: white; }
+    }
+
+    &.delete {
+      background-color: rgba($error, 0.15);
+      color: $error;
+      &:hover { background-color: $error; color: white; }
+    }
+    &.edit {
+      background-color: rgba($correct, 0.15);
+      bottom: 10px;      
+      
+      &:hover { background-color: $correct; }
+
+      img {
+          width: 100%;
+          padding: 8px;
+      }
+    }
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+
+    .window {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 10px;      
+      max-width: 450px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+
+        h4 {          
+          font-size: 1.1rem;
+        }
+
+        input {
+          padding: 10px 12px;
+          border: 1px solid $border-color;
+          border-radius: 4px;
+          transition: all 0.15s;
+
+          &:focus { border-color: $primary-color; }
+
+          &.file {
+            cursor: pointer;
+          }
+        }
+
+        > button {
+          background-color: $primary-color;
+          color: white;
+          padding: 10px;
+          border: none;
+          border-radius: 4px;
+          font-size: 0.9rem;          
+          cursor: pointer;
+          transition: all 0.15s;
+          
+          &:hover { background-color: $primary-hover; }
+        }
+      }
+    }
+  }
+}
+
+.btn-circle.btn-manage-cats {
+  background-color: rgba($primary-color, 0.1);
+  color: $primary-color;
+  &:hover {
+    background-color: $primary-color;
+    color: white;
+  }
+}
+
+.manage-word-categories {
+  h4 {
+    font-size: 1.1rem;    
+    margin-bottom: 5px;
+
+    .highlight-word {
+      color: $primary-color;
+    }
+  }
+  
+  .subtitle {
+    color: $text-secondary;
+    font-size: 0.8rem;    
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    margin-top: 10px;  
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: rgb($primary-color, 0.05);
+        border-color: $primary-color;
+      }
+
+      > input {
+        width: 1rem;
+        height: 1rem;
+        cursor: pointer;
+        accent-color: $primary-color;
+      }
+
+      span {        
+        color: $text-main;
+      }
+    }
+  }
+}

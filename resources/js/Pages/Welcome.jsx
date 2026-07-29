@@ -12,7 +12,7 @@ const Welcome = ({ auth }) => {
     }
 
     return (
-        <div className="welcome-container">
+        <div className="welcome-page">
             <Head title="Изучение английского языка" />
             
             <header className="welcome-header">

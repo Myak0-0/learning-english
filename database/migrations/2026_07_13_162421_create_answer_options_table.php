@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('task_option_id')->constrained('task_options')->cascadeOnDelete();
             $table->string('answer');
+            $table->foreignId('option_for_task_option_id')->nullable()->constrained('option_for_task_options')->cascadeOnDelete();
         });
     }
 

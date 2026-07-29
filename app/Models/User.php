@@ -53,7 +53,7 @@ class User extends Authenticatable
         ];
     }
 
-    public function admin() { return $this->hasOne(UserAdmin::class); }
+    public function admin() { return $this->hasOne(UserAdmin::class)->exists(); }
     public function rights() { return $this->hasMany(UserRight::class); }
     public function timeOfRepeatings() { return $this->hasMany(UserTimeOfRepeating::class); }
     public function taskAnswers() { return $this->hasMany(UserTaskAnswer::class); }

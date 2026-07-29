@@ -1,0 +1,154 @@
+@import 'colors.scss';
+.add-section-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.4); // Мягкое размытие/затемнение заднего плана
+    backdrop-filter: blur(2px);
+    z-index: 10;
+}
+
+.add-section-form {
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    background-color: #ffffff;    
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;    
+    animation: slideInLeft 0.25s ease-out;
+
+    .title-close {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        button {
+            background: none;
+            border: none;
+            font-size: 1.4em;
+            color: $text-secondary;
+            cursor: pointer;
+            transition: color 0.15s;
+
+            &:hover {
+                color: $error;
+            }
+        }
+
+        .title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: $text-main;
+        }
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+
+        .group-item {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+
+            > label {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: $text-main;
+            }
+
+            > input {
+                width: 100%;
+                padding: 10px 13px;
+                border: 2px solid $border-color;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: $text-main;                
+                transition: border-color 0.15s;
+
+                &:focus {
+                    border-color: $primary-color;
+                }
+            }
+        }
+
+        button.send {
+            width: 100%;
+            background-color: $primary-color;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba($primary-color, 0.15);
+            transition: all 0.15s;
+
+            &:hover:not(:disabled) {
+                background-color: $primary-hover;
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba($primary-color, 0.25);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        }
+    }
+}
+
+.add-section-radio-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    label {
+        border: 2px solid $border-color;
+        border-radius: 6px;
+        padding: 12px;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $text-secondary;
+        cursor: pointer;
+        transition: all 0.15s;
+
+        input {
+            display: none;
+        }
+
+        &:hover {
+            background-color: rgba(0,0,0,0.05);
+            border-color: $text-secondary;
+        }
+        
+        &.active {
+            border-color: $primary-color;
+            background-color: rgba($primary-color, 0.04);
+            color: $primary-color;
+        }
+    }
+}
+
+.add-section-error {
+    font-size: 0.8rem;
+    color: $error;
+    font-weight: 600;
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}

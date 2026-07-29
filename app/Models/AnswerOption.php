@@ -9,8 +9,10 @@ class AnswerOption extends Model
     public $timestamps = false;
     protected $fillable = [
         'task_option_id',
-        'answer'
+        'answer',
+        'option_for_task_option_id'
     ];
 
     public function taskOption() { return $this->belongsTo(TaskOption::class); }
+    public function optionForTaskOption() { return $this->belongsTo(OptionForTaskOption::class); }
 }

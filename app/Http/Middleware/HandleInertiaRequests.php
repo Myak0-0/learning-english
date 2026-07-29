@@ -29,10 +29,22 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
+        $send_user = $user ? [
+            'id' => $user->id,
+            'name' => $user->name,
+            'english_level' => $user->english_level
+        ] : null;
+
+        if ($user && $user->admin()) {
+            $send_user['is_admin'] = true;
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $send_user,
             ],
         ];
     }

@@ -14,21 +14,49 @@
     height: 100vh;
     gap: 20px;
     display: flex;
+    min-width: 350px;
+    z-index: 2;
 
     transform: translateX(-100%);
-    position: absolute;
+    position: fixed;
     transition: transform 0.2s ease-in-out;
 
     &.open {        
-        position: static;
         transform: translateX(0);
-    }
+        z-index: 50;
+
+        + .main-wrapper {
+            margin-left: 350px;
+        }
+    }    
 
     .brand {
+        position: relative;
         font-size: 1.5rem;
         font-weight: 800;
         color: $text-main;
+        text-align: center;
         span { color: $primary-color; }
+
+        .mobile-arrow {
+            position: absolute;
+            display: none;
+            color: $text-main;
+            cursor: pointer;
+            right: 10px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        width: 100%;
+
+        + .main-wrapper {
+            margin-left: 0 !important;
+        }
+
+        .mobile-arrow {
+            display: inline-block !important;            
+        }
     }
 
     .user-info {
@@ -102,11 +130,16 @@
     
     header {
         background-color: #fff;
-        padding: 20px 30px;
+        padding: 1rem 1.5rem;
         border-bottom: 1px solid $border-color;
+        width: 100%;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-        p.content {
-            font-size: 1.2rem;
+        div.content {
+            font-size: 1.5rem;
             font-weight: 700;
             color: $text-main;
 
@@ -117,6 +150,133 @@
         .symbol-menu {
             cursor: pointer;
             user-select: none;
+        }
+
+        .search-icon {
+            width: 1.5rem;
+            display: none;
+            cursor: pointer;
+
+            @media (max-width: 640px) {
+                display: block;
+            }
+        }
+
+        .search {
+            position: relative;
+
+            @media (max-width: 640px) {
+                position: absolute;
+                display: none;                
+                top: 100%;
+                right: 10%;
+
+                &.active {
+                    display: block;
+                }
+            }
+
+            ul.empty {
+                padding: 0 10px;
+                text-align: center;
+            }
+
+            .list {
+                max-height: 150px;
+                overflow-y: auto;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #fff;
+                border: 1px solid $border-color;                
+                padding: 0 10px;                
+                z-index: 25;
+                list-style: none;
+                box-shadow: 0 3px 4px rgba(0,0,0,0.05);
+
+                .search-word {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 8px 0;
+                    border-bottom: 1px solid #eee;
+                }
+
+                &.empty {
+                    text-align: center;                    
+                }
+
+                .word-name {
+                    font-size: 1rem;
+                    font-weight: 600;
+                }
+            }
+
+            .actions {
+                display: flex;
+                gap: 5px;
+
+                .btn-circle {
+                    width: 1.2rem;
+                    height: 1.2rem;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+
+                    svg { width: 0.8rem; height: 0.8rem; }
+
+                    &.play {
+                        color: $primary-color;
+                        background-color: rgba($primary-color, 0.04);
+                        border: 1px solid rgba($primary-color, 0.15);
+                        &:hover {
+                            background-color: $primary-color;
+                            color: #ffffff;
+                            border-color: $primary-color;
+                        }
+                    }
+
+                    &.add {
+                        color: $correct;
+                        background-color: rgba($correct, 0.04);
+                        border: 1px solid rgba($correct, 0.15);
+                        &:hover {
+                            background-color: $correct;
+                            color: #ffffff;
+                            border-color: $correct;
+                        }
+                    }
+
+                    &.delete {
+                        color: $error;
+                        background-color: rgba($error, 0.04);
+                        border: 1px solid rgba($error, 0.15);
+                        &:hover {
+                            background-color: $error;
+                            color: #ffffff;
+                            border-color: $error;
+                        }
+                    }                    
+                }
+            }
+        }
+
+        input {
+            z-index: 10;
+            padding: 6px 12px;
+            border: 1px solid $border-color;
+            border-radius: 4px;
+            transition: all 0.15s;
+            font-size: 1rem;
+            font-weight: 600;
+
+            &:focus {
+                border-color: $primary-color;
+            }
         }
     }
 

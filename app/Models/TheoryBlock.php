@@ -14,6 +14,15 @@ class TheoryBlock extends Model
         'page'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'content' => 'array',
+            'order' => 'integer',
+            'page' => 'integer',
+        ];
+    }
+
     public function section() { return $this->belongsTo(Section::class); }
     public function typeOfMedia() { return $this->belongsTo(TypeOfMedia::class); }
 }

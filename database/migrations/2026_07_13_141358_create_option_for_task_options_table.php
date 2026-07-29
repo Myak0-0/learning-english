@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('option_for_task_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('task_option_id')->constrained('task_options')->cascadeOnDelete();    
+            $table->foreignId('task_option_id')->constrained('task_options')->cascadeOnDelete();
             $table->string('option');
+            $table->integer('order')->default(0);
         });
     }
 

@@ -1,0 +1,504 @@
+@import 'colors.scss';
+
+.task-left {
+    background-color: #ffffff;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    max-width: 1200px;
+
+    > .title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: $text-main;
+        margin-bottom: 15px;
+    }
+
+    .list {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        max-height: 75vh;
+        overflow-y: auto;
+        padding: 0 4px 10px 0;
+    }
+
+    .no-tasks-msg {
+        font-size: 0.9rem;
+        color: $text-secondary;        
+        text-align: center;
+        margin: 30px 0;
+    }
+}
+
+.add-task-item {
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+    overflow: clip;
+
+    .header {
+        background-color: $bg-page;
+        border-bottom: 1px solid $border-color;
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        > .title {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+
+            .number {                
+                font-size: 0.75rem;
+                font-weight: 800;
+                background-color: rgba($primary-color, 0.1);
+                color: $primary-color;
+                padding: 3px 10px;
+                border-radius: 4px;
+                text-transform: uppercase;
+            }
+
+            .type-answer {                
+                font-size: 0.7rem;
+                font-weight: 800;
+                background-color: $user-name-background;
+                color: $text-secondary;
+                padding: 2px 6px;
+                border: 1px solid rgb(0,0,0,0.1);
+                border-radius: 4px;
+                text-transform: uppercase;                
+            }
+
+            .description {
+                font-size: 1.05rem;
+                font-weight: 600;
+                color: $text-main;
+                margin-top: 5px;
+                line-height: 1.4;
+            }
+        }
+
+        > .actions {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border-top: 1px solid $border-color;
+            padding-top: 10px;
+
+            button {
+                background-color: #ffffff;
+                border: 1px solid rgb(0,0,0,0.2);
+                border-radius: 4px;
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+                cursor: pointer;                
+                color: $text-secondary;
+                transition: all 0.15s;
+
+                &:hover:not(:disabled) {
+                    border-color: $primary-color;
+                    color: $primary-color;
+                }
+
+                &:disabled {
+                    opacity: 0.3;
+                    cursor: not-allowed;
+                }
+
+                &.delete {
+                    margin-left: auto;
+                    width: fit-content;
+                    height: auto;
+                    padding: 5px 12px;
+                    background-color: rgb($error, 0.1);
+                    border: 1px solid rgb($error, 0.2);
+                    color: $error;
+                    font-weight: 600;
+                    font-size: 0.8rem;
+                    border-radius: 4px;
+
+                    &:hover {
+                        background-color: $error;
+                        color: #ffffff;
+                        border-color: $error;
+                    }
+                }
+            }            
+        }
+    }
+    
+    .questions-list {
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;        
+
+        > .title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: $text-secondary;
+            letter-spacing: 0.5px;            
+        }
+    }
+}
+
+.question-item {
+    background-color: $user-name-background;
+    border: 1px solid $border-color;   
+    border-radius: 6px; 
+    padding: 6px 12px;
+
+    .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        transition: background-color 0.15s;
+        border-bottom: 1px solid $border-color;
+        padding: 4px 4px 10px 4px;
+
+        .question {
+            display: flex;            
+            gap: 3px;            
+
+            .number {
+                font-weight: 600;
+                color: $primary-color;
+                font-size: 0.8rem;
+            }
+
+            .content {
+                font-size: 0.8rem;
+                color: $text-main;
+                font-weight: 600;                
+            }
+        }
+        
+        > .actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;            
+
+            button {
+                background-color: #ffffff;
+                border: 1px solid rgb(0,0,0,0.2);
+                border-radius: 4px;
+                width: 24px;
+                height: 24px;
+                font-size: 0.6rem;
+                cursor: pointer;
+                color: $text-secondary;
+                transition: all 0.15s;
+
+                &:hover:not(:disabled) {
+                    border-color: $primary-color;
+                    color: $primary-color;
+                }
+
+                &:disabled {
+                    opacity: 0.3;
+                    cursor: not-allowed;
+                }
+
+                &.delete {
+                    border-color: 1px solid rgba($error, 0.2);                    
+                    color: $error;
+
+                    &:hover {
+                        background-color: $error;
+                        color: #ffffff;
+                        border-color: $error;
+                    }
+                }
+            }
+        }
+    }
+
+    .answer-block {
+        margin: 10px 5px 4px 5px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        > .title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: $text-main;
+        }
+
+        p {
+            font-size: 0.8rem;
+
+            .number {
+                color: $primary-color;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+.task-right {
+    background-color: #ffffff;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);    
+    border-top: 4px solid $primary-color !important; // Акцентная верхняя линия бренда
+
+    .title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: $text-main;
+        margin-bottom: 15px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;        
+    }
+
+    .form-item-box {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: $text-main;
+        }
+        
+        label.choose-options {
+            margin-top: 10px;
+
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid $border-color;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: $text-main;        
+            background-color: #ffffff;
+            transition: border-color 0.15s ease;
+
+            &:focus {
+                border-color: $primary-color;
+            }
+        }
+
+        .media-file {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;            
+            border: 1px solid $border-color;
+            padding: 10px 12px;
+            border-radius: 6px;
+
+            > input {
+                cursor: pointer;
+            }
+
+            .checkbox {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: $text-secondary;                
+
+                > input {
+                    width: 1rem;
+                    height: 1rem;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
+
+.form-task-description {
+    background-color: $bg-page;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .form-task-input {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+
+        @media (max-width: 640px) {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+.form-task-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h5 {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: $text-secondary;
+        letter-spacing: 0.5px;
+    }
+}
+
+.task-row-question {    
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    padding: 15px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;                
+
+        .number {
+            font-size: 1rem;
+            font-weight: 800;
+            color: $primary-color;
+        }
+        
+        .remove-row {
+            background: none;
+            border: none;
+            color: $error;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+
+            &:hover {
+                background-color: rgb($error, 0.05);
+            }
+        }
+    }
+
+    .answer-options {
+        border: 1px dashed rgba($primary-color, 0.3);
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;        
+        margin: 0 10px;
+
+        @media (max-width: 640px) {
+            margin-left: 0;
+        }
+        
+        .header {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: $primary-color;
+            text-transform: uppercase;            
+        }
+
+        .input-answer {
+            padding: 10px 16px 0 16px;
+
+            .input-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 8px;
+
+                > input {
+                    border: 1px solid rgb(0,0,0,0.2);
+                    background-color: $bg-page;
+                    padding: 10px 12px;
+                    font-size: 0.9rem;
+                    transition: all 0.15s;
+
+                    &:focus {
+                        background-color: #ffffff;
+                        border-color: $correct;
+                    }
+                }
+            }
+
+            button {
+                background: none;
+                border: none;
+                color: $correct;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;                
+                transition: all 0.15s ease;
+
+                &:hover {                    
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+.add-question-row-btn {
+    background-color: #ffffff;
+    border: 2px dashed rgb(0,0,0,0.2);
+    color: $text-main;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;    
+
+    &:hover {
+        border-color: $primary-color;
+        color: $primary-color;
+        background-color: rgba($primary-color, 0.02);
+    }
+
+    &:active {
+        transform: scale(0.99);
+    }
+}
+
+.save-task-btn {
+    background-color: $correct; 
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba($correct, 0.2);
+    transition: all 0.15s ease;
+
+    &:hover {        
+        transform: translateY(-1px);
+        box-shadow: 0 6px 10px rgba($correct, 0.2);
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}

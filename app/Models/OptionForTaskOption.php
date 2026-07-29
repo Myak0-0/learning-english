@@ -10,8 +10,10 @@ class OptionForTaskOption extends Model
     
     protected $fillable = [
         'task_option_id',
-        'option'
+        'option',
+        'order'
     ];
-
+    
     public function taskOption() { return $this->belongsTo(TaskOption::class); }
+    public function taskAnswers() { return $this->hasMany(UserTaskAnswer::class); }
 }

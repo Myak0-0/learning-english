@@ -16,6 +16,6 @@ class TaskOption extends Model
 
     public function task() { return $this->belongsTo(Task::class); }
     public function optionForTaskOptions() { return $this->hasMany(OptionForTaskOption::class); }
-    public function answerOptions() { return $this->hasMany(AnswersOption::class); }
+    public function answerOptions() { return $this->hasMany(AnswerOption::class); }
     public function taskAnswers() { return $this->hasMany(UserTaskAnswer::class); }
 }

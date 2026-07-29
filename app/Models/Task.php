@@ -9,7 +9,7 @@ class Task extends Model
     protected $fillable = [
         'section_id',
         'type_of_answer_id',
-        'descrtption',
+        'description',
         'type_of_media_id',
         'order',
         'page'

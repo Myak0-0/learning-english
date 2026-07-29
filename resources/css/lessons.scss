@@ -1,0 +1,150 @@
+@import 'colors';
+
+.lessons-page {
+    margin: 0 2%;
+    .navigation {
+        margin-bottom: 24px;
+        
+        a {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: rgb(0, 0, 0, 0.02);            
+            color: $text-main;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.2s;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+
+            &:hover {
+                background-color: rgb(0, 0, 0, 0.05);
+            }
+        }
+
+        .welcome-lessons {
+            h3 {
+                font-size: 1.2rem;
+                color: $text-main;
+                margin-bottom: 5px;
+            }
+            p {
+                color: $text-secondary;
+            }
+        }
+
+        .folder-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            button {
+                padding: 5px 10px;
+                border: 2px solid $correct;
+                border-radius: 5px;
+                font-size: 0.8rem;
+                cursor: pointer;
+                background: $correct;
+                color: #ffffff;
+                box-shadow: 0 3px 1px 1px rgba($correct, 0.4);
+                transition: all 0.2s;
+                
+                &:hover {
+                    border: 2px solid rgba(0,0,0,0.1);
+                }
+                &:active {
+                    transform: translateY(2px);
+                    box-shadow: 0 1px 1px 1px rgba($correct, 0.4);
+                }
+            }
+        }
+
+        .current-folder-title {
+            font-size: 1.5rem;
+            color: $text-main;
+            font-weight: 600;
+        }
+    }
+
+    .lessons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;    
+
+        .card {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 4px 0px rgba(0, 0, 0, 0.05);
+            color: $text-main;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            position: relative;
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px 0px rgba(0, 0, 0, 0.05);
+                
+                &.folder { 
+                    border-color: $primary-color; 
+                    background-color: rgb($primary-color, 0.08);                    
+                }
+                &.topic { 
+                    border-color: $correct;
+                    background-color: rgb($correct, 0.08);                    
+                }
+            }
+
+            .icon {
+                font-size: 2.2rem;
+                margin-right: 16px;
+                flex-shrink: 0;
+            }
+
+            .info {                
+                font-size: 1rem;
+                font-weight: 600;                
+                line-height: 1.4;                
+            }
+
+            button {
+                width: 1.2rem;
+                height: 1.2rem;                
+                font-size: 0.8rem;
+                border-radius: 50%;
+                position: absolute;
+                border: none;
+                right: 10px;
+                cursor: pointer;
+            }
+            
+            button.delete {
+                background: $error;                
+                color: #ffffff;                
+                top: 10px;
+                padding-bottom: 10px;
+                box-shadow: 0 0 3px 0px $error;
+            }
+            button.edit {
+                background: $correct;
+                bottom: 10px;
+                box-shadow: 0 0 3px 0px $correct;
+
+                img {
+                    width: 100%;
+                    padding: 4px;
+                }
+            }
+        }
+
+        .empty-message {
+            color: $text-secondary;
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 0;
+        }
+    }
+}
