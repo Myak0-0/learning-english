@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import '../../css/authenticated.scss';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
@@ -62,9 +62,16 @@ const AuthenticatedLayout = ({ header, children }) => {
     };
 
     useEffect(() => {
-        if (auth.user?.is_admin) {
-            axios.post('/check-user-right', { user_right: auth.user?.is_admin })
+        const checkAdmin = async () => {
+            if (auth.user?.is_admin) {
+                try {
+                    await axios.post('/check-user-right', { user_right: auth.user?.is_admin });
+                } catch {
+                    router.visit('/login');
+                }
+            }
         }
+        checkAdmin();
     }, [auth.user?.is_admin])
 
     useEffect(() => {

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import '../../../css/TaskEdit.scss';
 import { router } from "@inertiajs/react";
+import ModalTaskEdit from "./ModalTaskEdit";
+import pencil from '../../../images/pencil.webp';
 
 const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, handleMoveBlock, setErrorMessage}) => {    
     const [description, setDescription] = useState("");
@@ -10,6 +12,8 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
     const [questions, setQuestions] = useState([
         { content: "", gaps: [] }
     ]);
+
+    const [editingTask, setEditingTask] = useState(null);
 
     const handleQuestionContentChange = (qIdx, text) => {
         const matches = text.match(/\(___\)/g) || [];
@@ -154,6 +158,10 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
                                 <div className="actions">
                                     <button disabled={tIdx === 0} onClick={() => handleMoveBlock(task.id, 'up', 'task')} title="Карточку выше">▲</button>
                                     <button disabled={tIdx === existingTasks.length - 1} onClick={() => handleMoveBlock(task.id, 'down', 'task')} title="Карточку ниже">▼</button>
+                                    
+                                    <button className="edit" onClick={() => setEditingTask(task)} title="Редактировать текст">
+                                        <img src={pencil} alt="карандаш" />
+                                    </button>
                                     <button className="delete" onClick={() => handleDeleteTask(task.id)}>Удалить</button>
                                 </div>
                             </div>
@@ -208,7 +216,7 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
 
                 <div className="form-task-description">
                     <div className="form-item-box">
-                        <label>Описание / Инструкция задания:</label>
+                        <label>Описание задания:</label>
                         <input 
                             type="text" 
                             placeholder="Описание..."
@@ -247,7 +255,7 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
                             </div>
 
                             <div className="form-item-box">
-                                <label>Контент вопроса:</label>
+                                <label>Текст вопроса:</label>
                                 
                                 {(mediaTypeName === "text" || mediaTypeName === "video" || mediaTypeName === "dialogue") && (
                                     <input 
@@ -361,6 +369,15 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
                     🚀 Сохранить задание
                 </button>
             </form>
+
+            {editingTask && (
+                <ModalTaskEdit 
+                    task={editingTask}
+                    answerTypes={answerTypes}
+                    mediaTypes={mediaTypes}
+                    onClose={() => setEditingTask(null)}
+                />
+            )}
         </div>
         </>
     );

@@ -1,7 +1,7 @@
 import '../../css/wordCard.scss';
 import { useState, useEffect } from 'react';
 
-const WordCard = ({ words, onClose, playAudio }) => {
+const WordCard = ({ words, onClose, playAudio, speakEnglishWord }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
     const [userInput, setUserInput] = useState('');
@@ -25,7 +25,8 @@ const WordCard = ({ words, onClose, playAudio }) => {
         if (cleanUserWord === cleanTargetWord) {
             setIsCorrect(true);
             setIsFlipped(true);
-            playAudio(currentWord.audio);
+            
+            currentWord.audio ? playAudio(currentWord.audio) : speakEnglishWord(currentWord.name);
         } else {
             setIsCorrect(false);
         }
@@ -77,7 +78,7 @@ const WordCard = ({ words, onClose, playAudio }) => {
 
                     <div className={`card ${isFlipped ? 'flipped' : ''} ${isCorrect ? 'correct-flash' : ''}`}
                         onClick={() => {
-                            !isFlipped && playAudio(currentWord.audio);
+                            !isFlipped && (currentWord.audio ? playAudio(currentWord.audio) : speakEnglishWord(currentWord.name));
                             !isCorrect && setIsFlipped(!isFlipped);                        
                         }}>
                         <div className="card-face card-front">
@@ -89,7 +90,7 @@ const WordCard = ({ words, onClose, playAudio }) => {
                             
                             <button className="btn-audio" onClick={(e) => { 
                                 e.stopPropagation();
-                                playAudio(currentWord.audio);
+                                currentWord.audio ? playAudio(currentWord.audio) : speakEnglishWord(currentWord.name);
                             }}>
                                 🔊 Озвучить
                             </button>

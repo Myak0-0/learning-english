@@ -13,7 +13,7 @@ import TasksPage from './TopicParts/Tasks';
 
 let currentAudio = null;
 
-const TopicShow = ({ topic, currentPage, currentUserId, listIds, lastUpdated }) => {
+const TopicShow = ({ topic, currentPage, currentUserId, listIds, lastUpdated, isAdmin }) => {
 
     const no_info = topic.theory_blocks.length == 0 && topic.tasks.length == 0;
 
@@ -25,6 +25,18 @@ const TopicShow = ({ topic, currentPage, currentUserId, listIds, lastUpdated }) 
         }
         currentAudio = new Audio(`/word-audios/${audioFile}`);
         currentAudio.play().catch(error => console.log('Ошибка воспроизведения:', error));
+    };
+
+    const speakEnglishWord = (text) => {
+        if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        
+        window.speechSynthesis.speak(utterance);
+        }
     };
 
     const handleTheoryAudioPlay = (e) => {
@@ -79,7 +91,7 @@ const TopicShow = ({ topic, currentPage, currentUserId, listIds, lastUpdated }) 
                         }
 
                         if (mediaType === 'word' && block.word_details) {
-                            return <WordPage key={block.id} block={block} command={playAudio} currentUserId={currentUserId}/>
+                            return <WordPage key={block.id} block={block} command={playAudio} currentUserId={currentUserId} speakEnglishWord={speakEnglishWord}/>
                         }
 
                         if (mediaType === "audio" && block.content) {
@@ -100,7 +112,8 @@ const TopicShow = ({ topic, currentPage, currentUserId, listIds, lastUpdated }) 
                 {topic.tasks.length > 0 && (
                 <section className="tasks-section">                    
                     <TasksPage tasks={topic.tasks} currentUserId={currentUserId} command={handleTheoryAudioPlay} 
-                               listIds={listIds} lastUpdated={lastUpdated} formatTheoryText={formatTheoryText}/>
+                               listIds={listIds} lastUpdated={lastUpdated} formatTheoryText={formatTheoryText}
+                               isAdmin={isAdmin}/>
                 </section>
                 )}
 

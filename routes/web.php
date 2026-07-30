@@ -79,12 +79,19 @@ Route::post('/section/task-block/add', [AddTopicController::class, 'task_block_a
 Route::post('/section/task-block/delete', [AddTopicController::class, 'task_block_delete'])
     ->middleware(['auth', 'verified']);
 
+Route::post('/section/task-block/update', [AddTopicController::class, 'update_task'])
+    ->middleware(['auth', 'verified']);
+
 Route::post('/section/task-option/delete', [AddTopicController::class, 'task_option_block_delete'])
-    ->middleware(['auth', 'verified']);      
+    ->middleware(['auth', 'verified']);
 
 
 
-Route::get('/words', [WordController::class, 'show_words'])->middleware(['auth', 'verified'])->name('words');
+Route::get('/words/get-auto-translation', [WordController::class, 'translate_word'])
+    ->middleware(['auth', 'verified']);
+
+Route::get('/words', [WordController::class, 'show_words'])
+    ->middleware(['auth', 'verified'])->name('words');
 
 Route::post('/user/add-word', [WordController::class, 'add_word_to_learning'])
     ->middleware(['auth', 'verified']);

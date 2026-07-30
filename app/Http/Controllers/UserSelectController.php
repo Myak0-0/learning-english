@@ -114,11 +114,11 @@ class UserSelectController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
             
-            if ($isAjax) {                
+            if ($isAjax) {
                 response()->json([
                     'redirect' => route('login'),
                     'message' => 'Unauthorized'
-                ], 403)->send();
+                ], 401)->send();
                 exit;
             }
 

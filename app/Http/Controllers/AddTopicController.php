@@ -39,6 +39,7 @@ class AddTopicController extends Controller
     }
 
 
+
     public function open_page(Request $request)
     {
         $this->check_admin($request);
@@ -87,6 +88,8 @@ class AddTopicController extends Controller
             'answerTypes'    => $answerTypes
         ]);
     }
+
+
 
     public function add_section(Request $request) {
         $this->check_admin($request);
@@ -147,6 +150,8 @@ class AddTopicController extends Controller
     }
 
 
+
+
     public function topic_move(Request $request) {
         $this->check_admin($request);
 
@@ -191,6 +196,8 @@ class AddTopicController extends Controller
 
         return response()->json(['success' => true]);        
     }
+
+    
 
     public function theory_block_add(Request $request)
     {
@@ -451,8 +458,6 @@ class AddTopicController extends Controller
         return $tempName;
     }
 
-
-
     public function task_block_delete(Request $request) {
         $this->check_admin($request);
 
@@ -513,5 +518,88 @@ class AddTopicController extends Controller
         $taskOption->delete();
 
         return response()->json(['success' => true]);        
+    }
+
+    public function update_task(Request $request)
+    {
+        $this->check_admin($request);
+
+        $validated = $request->validate([
+            'task_id'       => 'required|integer|exists:tasks,id',
+            'description'   => 'required|string|max:255',
+            'media_content' => 'nullable|string',
+            'questions'     => 'required|array',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $task = Task::findOrFail($validated['task_id']);
+            
+            $task->update([
+                'description' => $validated['description']
+            ]);
+
+            foreach ($validated['questions'] as $qIndex => $qData) {
+                if (!$qData['content']) return;
+                
+                $questionId = $qData['id'] ?? null;
+
+                if (is_null($questionId)) {
+                    $question = TaskOption::create([
+                        'task_id' => $task->id,
+                        'content' => $qData['content'],
+                        'order'   => $qIndex
+                    ]);
+                } else {
+                    $question = TaskOption::findOrFail($questionId);
+                    
+                    $question->update([
+                        'content' => $qData['content'],
+                        'order'   => $qIndex
+                    ]);
+                }
+
+                OptionForTaskOption::where('task_option_id', $question->id)->delete();
+                AnswerOption::where('task_option_id', $question->id)->delete();
+
+                if (isset($qData['gaps']) && is_array($qData['gaps'])) {
+                    foreach ($qData['gaps'] as $gapIndex => $gapData) {
+                        
+                        $savedOptionId = null;
+
+                        if ($task->typeOfAnswer->name === 'choice' && isset($gapData['options'])) {                            
+
+                            $savedOption = OptionForTaskOption::create([
+                                'task_option_id' => $question->id,
+                                'option'         => $gapData['options'],
+                                'order'          => $gapIndex,
+                            ]);
+
+                            $savedOptionId = $savedOption->id;
+                        }
+
+                        if ($task->typeOfAnswer->name !== 'no-answer' && isset($gapData['answers']) && is_array($gapData['answers'])) {
+                            foreach ($gapData['answers'] as $ansText) {
+                                if (is_null($ansText) || trim($ansText) === '') continue;
+
+                                AnswerOption::create([
+                                    'task_option_id'            => $question->id,
+                                    'option_for_task_option_id' => $savedOptionId,
+                                    'answer'                    => trim($ansText),
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 }

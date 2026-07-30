@@ -83,7 +83,7 @@
         .learn-word {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 20px;
 
           button {
             font-size: 1rem;
@@ -144,7 +144,7 @@
       }
     }
   }
-  
+
   .btn-circle {
     width: 2rem;
     height: 2rem;
@@ -170,10 +170,8 @@
       &:hover { background-color: $error; color: white; }
     }
     &.edit {
-      background-color: rgba($correct, 0.15);
-      bottom: 10px;      
-      
-      &:hover { background-color: $correct; }
+      background-color: rgba($correct, 0.15) !important;      
+      &:hover { background-color: $correct !important; }
 
       img {
           width: 100%;
@@ -195,6 +193,8 @@
     z-index: 999;
 
     .window {
+      overflow-y: auto;
+      max-height: 60vh;
       background: white;
       padding: 16px 20px;
       border-radius: 10px;      
@@ -215,10 +215,29 @@
           border: 1px solid $border-color;
           border-radius: 4px;
           transition: all 0.15s;
+          font-size: 1rem;
 
           &:focus { border-color: $primary-color; }
 
           &.file {
+            cursor: pointer;
+          }
+        }
+        
+        .word-voice-btn {
+          display: flex;
+          gap: 5px;
+
+          input {
+            flex: 1;
+          }
+
+          button {
+            background-color: $primary-color;
+            border: none;
+            font-size: 0.9rem;
+            width: calc(1.25rem + 20px);
+            border-radius: 4px;
             cursor: pointer;
           }
         }

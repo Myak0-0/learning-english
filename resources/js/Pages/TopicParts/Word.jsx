@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 
-const Word = ({ block, command: playAudio, currentUserId }) => {
+const Word = ({ block, command: playAudio, currentUserId, speakEnglishWord }) => {
     const [words, setWords] = useState(block.word_details || []);
 
     const addWords = async (wordIds) => {
@@ -57,7 +57,7 @@ const Word = ({ block, command: playAudio, currentUserId }) => {
                         <span className="translation">{word.translation}</span>
                     </div>
                     <div className="buttons">
-                        <button className="btn-circle btn-play" onClick={() => playAudio(word.audio)} title="Послушать">
+                        <button className="btn-circle btn-play" onClick={() => word.audio ? playAudio(word.audio) : speakEnglishWord(word.name)} title="Послушать">
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                         </button>
                         {word.isRepeating ? (

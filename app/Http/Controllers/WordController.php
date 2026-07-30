@@ -9,6 +9,7 @@ use App\Models\Word;
 use App\Models\WordCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 
 class WordController extends Controller
@@ -35,6 +36,7 @@ class WordController extends Controller
     public function show_words() {
         $currentUser = Auth::user();
         $isAdmin = $currentUser->admin();
+        $words = null;
 
         if ($isAdmin) {
             $categories = CategoryOfWord::with('words')->get(); 
@@ -57,6 +59,8 @@ class WordController extends Controller
                 
                 $categories = collect($categoriesArray);
             }
+
+            $words = Word::select('*')->orderBy('created_at', 'desc')->get();
         } else {
             $categories = CategoryOfWord::whereHas('words', function ($query) use ($currentUser) {
                 $query->whereIn('words.id', function ($subQuery) use ($currentUser) {
@@ -76,7 +80,8 @@ class WordController extends Controller
         return Inertia::render('Words', [
             'is_admin' => $isAdmin,
             'initialCategories' => $categories,
-            'currentUserId' => $currentUser->id
+            'currentUserId' => $currentUser->id,
+            'words' => $words
         ]);
     }
 
@@ -141,6 +146,26 @@ class WordController extends Controller
         ]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function translate_word(Request $request) {
+        $word = $request->input('word');
+
+        if (empty($word)) {
+            return response()->json(['error' => $word], 400);
+        }
+
+        $response = Http::get('https://api.mymemory.translated.net', [
+            'q' => $word,
+            'langpair' => 'en|ru',
+        ]);
+
+        if ($response->successful()) {
+            $translatedText = $response->json('responseData.translatedText');
+            return response()->json(['translation' => mb_strtolower($translatedText)]);
+        }
+
+        return response()->json(['error' => 'Ошибка переводчика'], 500);
     }
 
     public function bring_word_to_category(Request $request)

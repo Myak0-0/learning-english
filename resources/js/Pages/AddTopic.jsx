@@ -69,6 +69,10 @@ const AddTopic = ({ topic, currentPage, existingBlocks, mediaTypes, allWords, ex
     );
 }
 
-AddTopic.layout = page => <AuthenticatedLayout header="Редактирование темы" children={page} />
+AddTopic.layout = page => {
+    const title = page.props.topic?.title || 'темы';
+
+    return (<AuthenticatedLayout header={`Редактирование: '${title}'`} children={page} />)
+};
 
 export default AddTopic;

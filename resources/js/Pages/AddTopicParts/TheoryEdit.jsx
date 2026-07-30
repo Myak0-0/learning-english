@@ -43,8 +43,6 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
 
         axios.post('/section/theory-block/delete', { block_id: blockId })
             .then(() => {
-                setErrorMessage("Блок теории удален");
-
                 router.reload();
             })
             .catch(err => console.error("Ошибка удаления:", err));

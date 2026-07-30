@@ -7,6 +7,9 @@
     padding: 1rem;
     border-radius: 16px;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 
     .no-info {
         text-align: center;
@@ -399,9 +402,10 @@
     }
 
     &:hover {
-        .error-box {
+        .error-box,
+        .answer-box {
             opacity: 1;
-            transform: translateX(-50%) translateY(-4px);
+            transform: translateX(-50%) translateY(-4px);            
         }
     }
 }
@@ -457,7 +461,8 @@
         }
 
         &:hover {
-            .error-box {
+            .error-box,
+            .answer-box {
                 opacity: 1;
                 transform: translateX(-50%) translateY(-4px);
             }
@@ -470,12 +475,11 @@
 }
 
 
-.error-box {
-    position: absolute;
-    bottom: 100%;
+.error-box,
+.answer-box {
+    position: absolute;    
     left: 50%;
     transform: translateX(-50%) translateY(0);
-    margin-bottom: 5px;        
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -490,21 +494,46 @@
     transition: opacity 0.15s ease, transform 0.15s ease;
     list-style-position: inside;
 
+    &.error-box {
+        bottom: 100%;
+        margin-bottom: 5px;        
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: $text-main transparent transparent transparent;
+        }
+    }
+    &.answer-box {
+        top: 100%;
+        margin-top: 10px;
+        min-width: 250px;
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent $text-main transparent;
+        }
+
+        li {
+            line-height: 1.2;
+        }
+    }
+
     .error-item {
         font-size: 0.8rem;
         font-weight: 700;            
         white-space: nowrap;
-    }
-    
-    &::after {
-        content: '';
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        border-width: 5px;
-        border-style: solid;
-        border-color: $text-main transparent transparent transparent;
     }
 }
 

@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
 import arrow_answer from '../../../../images/arrow-answer.webp';
+import { router } from '@inertiajs/react';
+import axios from 'axios';
 
 const Image = ({task, taskNumber, answerType,
                veritifyAnswer,
@@ -6,8 +9,22 @@ const Image = ({task, taskNumber, answerType,
                userAnswers,
                shakingButtons,
                answerStates,
-               errorHistory
+               errorHistory,
+               isAdmin
             }) => {
+
+    useEffect(() => {
+        const checkAdmin = async () => {
+            if (isAdmin) {
+                try {
+                    await axios.post('/check-user-right', { user_right: isAdmin });
+                } catch {
+                    router.visit('/login');
+                }
+            }
+        }
+        checkAdmin();
+    }, [isAdmin]);                
         
     const count_pictures = task.task_options.length;                
     return (
@@ -54,6 +71,14 @@ const Image = ({task, taskNumber, answerType,
                                             <ul className="error-box">
                                                 {currentInputErrors.map((err, errIdx) => (
                                                     <li key={errIdx} className="error-item">{err}</li>
+                                                ))}
+                                            </ul>
+                                        )}
+
+                                        {question.answer_options && isAdmin && (
+                                            <ul className="answer-box">
+                                                {question.answer_options.map((answer, answerId) => (                                                    
+                                                    <li key={answerId}>{answer.answer}</li>                                                    
                                                 ))}
                                             </ul>
                                         )}

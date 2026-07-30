@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import arrow_answer from '../../../../images/arrow-answer.webp';
+import { router } from '@inertiajs/react';
 
 const Text = ({task, taskNumber, answerType, 
                handleSelectChoice,
@@ -7,9 +9,24 @@ const Text = ({task, taskNumber, answerType,
                userAnswers,
                shakingButtons,
                answerStates,
-               errorHistory
+               errorHistory,
+               isAdmin
             }) => {
-return (
+
+    useEffect(() => {
+        const checkAdmin = async () => {
+            if (isAdmin) {
+                try {
+                    await axios.post('/check-user-right', { user_right: isAdmin });
+                } catch {
+                    router.visit('/login');
+                }
+            }
+        }
+        checkAdmin();
+    }, [isAdmin]);
+
+    return (
     <div key={task.id}>
         <h3 className="title">📝 {taskNumber + '. ' + task.description}</h3>
         <div className="questions-list">
@@ -79,6 +96,14 @@ return (
                                                                 ))}
                                                             </ul>
                                                         )}
+
+                                                        {question.answer_options && isAdmin && (
+                                                            <ul className="answer-box">
+                                                                {question.answer_options.filter((answ_opt) => answ_opt.option_for_task_option_id === current_id).map((answer, answerId) => (                                                    
+                                                                    <li key={answerId}>{answer.answer}</li>                                                    
+                                                                ))}
+                                                            </ul>
+                                                        )}
                                                     </span>
                                                 );
                                             })()}
@@ -135,6 +160,14 @@ return (
                                                 ))}
                                             </ul>
                                         )}
+
+                                        {question.answer_options && isAdmin && (
+                                            <ul className="answer-box">
+                                                {question.answer_options.map((answer, answerId) => (                                                    
+                                                    <li key={answerId}>{answer.answer}</li>                                                    
+                                                ))}
+                                            </ul>
+                                        )}
                                     </div>
                                 );
                             })()}
@@ -146,7 +179,7 @@ return (
             })}
         </div>                                        
     </div>
-)
+    )
 }
 
 export default Text;

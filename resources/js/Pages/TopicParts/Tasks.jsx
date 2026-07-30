@@ -8,7 +8,7 @@ import AudioPage from "./TaskParts/Audio";
 import VideoPage from "./TaskParts/Video";
 import DialoguePage from "./TaskParts/DialoguePage";
 
-const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, lastUpdated, formatTheoryText }) => {
+const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, lastUpdated, formatTheoryText, isAdmin }) => {
     const [userAnswers, setUserAnswers] = useState({});    
         
     const [shakingButtons, setShakingButtons] = useState({});
@@ -221,7 +221,7 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
             real_answer = question.answer_options.find(opt => opt.option_for_task_option_id == stateKey);
             isCorrect = cleanText(real_answer.answer) == cleanText(user_answer);
         } else if (answerType == 'input') {
-            real_answer = question.answer_options.find(opt => cleanText(opt.answer) == cleanText(user_answer));            
+            real_answer = question.answer_options.find(opt => cleanText(opt.answer) == cleanText(user_answer));
             isCorrect = real_answer;
         } else if (answerType == 'no-answer') {
             isCorrect = 1;
@@ -240,7 +240,7 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                 task_id: task_id,
                 task_option_id: questionId,
                 option_for_task_option_id: option_for_option_id || null,
-                answer: cleanText(user_answer),                
+                answer: user_answer,                
                 is_correct: true
             }).catch(err => console.error("Ошибка сохранения ответа:", err));
 
@@ -272,7 +272,7 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                 task_id: task_id,
                 task_option_id: questionId,
                 option_for_task_option_id: option_for_option_id,
-                answer: cleanText(user_answer),
+                answer: user_answer,
                 is_correct: false
             }).catch(err => console.error("Ошибка сохранения неверного ответа:", err));
 
@@ -303,7 +303,8 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                         userAnswers={userAnswers}
                         shakingButtons={shakingButtons}
                         answerStates={answerStates}
-                        errorHistory={errorHistory}/>
+                        errorHistory={errorHistory}
+                        isAdmin={isAdmin}/>
                 );
             }
             if (mediaType === 'dialogue') {
@@ -324,7 +325,8 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                         userAnswers={userAnswers}
                         shakingButtons={shakingButtons}
                         answerStates={answerStates}
-                        errorHistory={errorHistory}/>
+                        errorHistory={errorHistory}
+                        isAdmin={isAdmin}/>
                 );
             }
             if (mediaType === 'audio') {

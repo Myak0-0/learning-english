@@ -1,26 +1,41 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../css/words.scss';
 
 import WordCard from './WordCard';
+import CheckCategoriesInWord from './WordParts/CheckCategoriesInWord';
+import CheckWordsInCategory from './WordParts/CheckWordsInCategory';
+import CreateCategory from './WordParts/CreateCategory';
+import CreateWord from './WordParts/CreateWord';
 
 import pencil from '../../images/pencil.webp';
 
 let currentAudio = null;
 
-const Words = ({ is_admin, initialCategories = [], currentUserId }) => {
+const Words = ({ is_admin, initialCategories = [], currentUserId, words = null }) => {
   const [categories, setCategories] = useState(initialCategories);
   const [expandedCategories, setExpandedCategories] = useState({});
   
   const [activeModal, setActiveModal] = useState(null);
   const [selectedWord, setSelectedWord] = useState(null);
-
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newWord, setNewWord] = useState({ name: '', translation: '', audio: null });  
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const [wordCard, setWordCard] = useState(null);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+        if (is_admin) {
+            try {
+                await axios.post('/check-user-right', { user_right: is_admin });
+            } catch {
+                router.visit('/login');
+            }
+        }
+    }
+    checkAdmin();
+  }, [is_admin]);
 
   useEffect(() => {
     if (activeModal == 'reload') {
@@ -28,8 +43,29 @@ const Words = ({ is_admin, initialCategories = [], currentUserId }) => {
     }
   }, [activeModal])
 
+  const shuffleArray = (array) => {
+    const shuffled = [...array]; 
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const toggleCategory = (catId) => {
     setExpandedCategories(prev => ({ ...prev, [catId]: !prev[catId] }));
+  };
+
+  const speakEnglishWord = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      
+      window.speechSynthesis.speak(utterance);
+    }
   };
 
   const playAudio = (audioFile) => {
@@ -52,34 +88,6 @@ const Words = ({ is_admin, initialCategories = [], currentUserId }) => {
     } catch (error) { console.error(error); }
   };
 
-  const handleCreateCategory = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post('/words/add-category', { name: newCategoryName });
-      setNewCategoryName('');
-    } catch (error) { console.error(error); }
-  };
-
-  const handleCreateWord = async (e) => {
-    e.preventDefault();
-  
-    const formData = new FormData();
-    formData.append('name', newWord.name);
-    formData.append('translation', newWord.translation);
-    if (newWord.audio) {
-      formData.append('audio', newWord.audio);
-    }
-
-    try {
-      await axios.post('/words/add-word', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setNewWord({ name: '', translation: '', audio: null });      
-    } catch (error) { 
-      console.error("Ошибка при создании слова:", error); 
-    }    
-  };
-
   const handleDeleteWord = async (word_id) => {
     try {
       await axios.post('/words/delete-word', { word_id: word_id});
@@ -92,23 +100,49 @@ const Words = ({ is_admin, initialCategories = [], currentUserId }) => {
     }    
   };
 
-  const handleRemoveFromCategory = async (categoryId, isChecked) => {
-    const url = isChecked ? '/words/bind-category-word' : '/words/delete-word-from-category';
+  const handleMoveCategory = async (id, isChecked) => {    
+    const url = isChecked ? '/words/bind-category-word' : '/words/delete-word-from-category';    
     try {
-      await axios.post(url, {
-        word_id: selectedWord.id,
-        category_id: categoryId
-      });
 
-      setCategories(prev => prev.map(cat => {
-        if (cat.id !== categoryId) return cat;
-        if (isChecked) {
-          const exists = cat.words.some(w => w.id === selectedWord.id);
-          return exists ? cat : { ...cat, words: [...cat.words, selectedWord] };
-        } else {
-          return { ...cat, words: cat.words.filter(w => w.id !== selectedWord.id) };
-        }      
-      }));
+      if (activeModal === 'manage-word' && selectedWord) {
+        await axios.post(url, {
+          word_id: selectedWord.id,
+          category_id: id
+        });
+
+        setCategories(prev => prev.map(cat => {
+          if (cat.id !== id) return cat;
+
+          if (isChecked) {
+            const exists = cat.words.some(w => w.id === selectedWord.id);
+            return exists ? cat : { ...cat, words: [...cat.words, selectedWord] };
+          } else {
+            return { ...cat, words: cat.words.filter(w => w.id !== selectedWord.id) };
+          }
+        }));
+
+      } else if (activeModal === 'manage-category' && selectedCategory) {
+
+        await axios.post(url, {
+          word_id: id,
+          category_id: selectedCategory.id
+        });
+
+        const targetWord = words.find(w => w.id === id);
+        
+        if (!targetWord) return;
+
+        setCategories(prev => prev.map(cat => {
+            if (cat.id !== selectedCategory.id) return cat;
+            
+            if (isChecked) {
+                const exists = cat.words?.some(w => w.id === id);
+                return exists ? cat : { ...cat, words: [...(cat.words || []), targetWord] };
+            } else {
+                return { ...cat, words: (cat.words || []).filter(w => w.id !== id) };
+            }
+        }));
+      }
     } catch (error) {
       console.error("Ошибка при изменении категории слова:", error);
     }
@@ -162,6 +196,19 @@ const Words = ({ is_admin, initialCategories = [], currentUserId }) => {
                 </div>
 
                 <div className='learn-word'>
+                  {is_admin && 
+                    <button 
+                      className="btn-circle edit" 
+                      title="редактировать" 
+                      onClick={(e) => { 
+                        e.stopPropagation();
+                        setActiveModal('manage-category');
+                        setSelectedCategory(category);
+                      }}
+                    >
+                      <img src={pencil} alt="pencil" />
+                    </button>
+                  }
                   <button onClick={() => {setWordCard(category.words || []);}}>
                     учить слова
                   </button>
@@ -172,9 +219,10 @@ const Words = ({ is_admin, initialCategories = [], currentUserId }) => {
 
               {wordCard !== null && (
                 <WordCard 
-                    words={wordCard} 
+                    words={shuffleArray(wordCard)}
                     onClose={() => setWordCard(null)}
                     playAudio={playAudio}
+                    speakEnglishWord={speakEnglishWord}
                 />
               )}
               
@@ -184,29 +232,30 @@ const Words = ({ is_admin, initialCategories = [], currentUserId }) => {
                     <div className="words-grid">
                       {category.words.map(word => (
                         <div key={word.id} className="card">
+
                           <div className="info">
                             <span className="foreign">{word.name}</span>
                             <span className="separator">—</span>
                             <span className="translation">{word.translation}</span>
                           </div>
+
                           <div className="actions">
-                            <button className="btn-circle play" title="Послушать" onClick={() => playAudio(word.audio)}>
+                            <button className="btn-circle play" title="Послушать" onClick={() => 
+                              {word.audio ? playAudio(word.audio) : speakEnglishWord(word.name)}}>
                               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                             </button>
                             
-                            {is_admin && 
-                            <>
-                              <button 
-                                className="btn-circle edit" 
-                                title="редактировать" 
-                                onClick={() => { 
-                                  setSelectedWord(word);
-                                  setActiveModal('manage-word');
-                                }}
-                              >
-                                <img src={pencil} alt="pencil" />
-                              </button>
-                            </>
+                            {is_admin &&                             
+                            <button 
+                              className="btn-circle edit" 
+                              title="редактировать" 
+                              onClick={() => { 
+                                setSelectedWord(word);
+                                setActiveModal('manage-word');
+                              }}
+                            >
+                              <img src={pencil} alt="pencil" />
+                            </button>                            
                             }
                             
                             <button 
@@ -232,52 +281,26 @@ const Words = ({ is_admin, initialCategories = [], currentUserId }) => {
           ))}
         </div>
         
-        {activeModal && activeModal != 'reload' && (
-          <div className="modal-backdrop" onClick={() => activeModal == 'manage-word' ? setActiveModal(null) : setActiveModal('reload')}>
+        {activeModal && activeModal != 'reload' && is_admin && (
+          <div className="modal-backdrop" onClick={() => activeModal == 'manage-word' || activeModal == 'manage-category' ? setActiveModal(null) : setActiveModal('reload')}>
             <div className="window" onClick={(e) => e.stopPropagation()}>
               
               {activeModal === 'category' && (
-                <form onSubmit={handleCreateCategory}>
-                  <h4>Создать новую категорию</h4>
-                  <input type="text" placeholder="Название категории" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} required />
-                  <button type="submit">Сохранить</button>
-                </form>
+                <CreateCategory/>
               )}
 
               {activeModal === 'word' && (
-                <form onSubmit={handleCreateWord}>
-                  <h4>Добавить новое слово в базу</h4>
-                  <input type="text" placeholder="Слово" value={newWord.name} onChange={e => setNewWord({...newWord, name: e.target.value})} required />
-                  <input type="text" placeholder="Перевод" value={newWord.translation} onChange={e => setNewWord({...newWord, translation: e.target.value})} required />
-                  <input type="file" className='file' accept="audio/mp3, audio/mpeg" onChange={e => setNewWord({...newWord, audio: e.target.files[0]})} />
-                  <button type="submit">Создать слово</button>
-                </form>
+                <CreateWord speakEnglishWord={speakEnglishWord}/>
               )}
 
               {activeModal === 'manage-word' && selectedWord && (
-                <div className="manage-word-categories">
-                  <h4>Категории для слова: <span className="highlight-word">"{selectedWord.name}"</span></h4>
-                  <p className="subtitle">Отметьте папки, в которых должно находиться слово</p>
-                  
-                  <div className="list">
-                    {categories
-                      .filter(c => c.id !== 0)
-                      .map(cat => {
-                        const isAttached = cat.words?.some(w => w.id === selectedWord.id);
+                <CheckCategoriesInWord handleMoveCategory={handleMoveCategory} selectedWord={selectedWord} categories={categories}/>
+              )}
 
-                        return (
-                          <label key={cat.id} className="item">
-                            <input 
-                              type="checkbox" 
-                              checked={isAttached} 
-                              onChange={(e) => handleRemoveFromCategory(cat.id, e.target.checked)}
-                            />
-                            <span>📁 {cat.name}</span>
-                          </label>
-                        );
-                    })}
-                  </div>
-                </div>
+              {activeModal === 'manage-category' && (
+                <CheckWordsInCategory handleMoveCategory={handleMoveCategory} 
+                                      selectedCategory={selectedCategory} 
+                                      words={words} categories={categories}/>
               )}
 
             </div>

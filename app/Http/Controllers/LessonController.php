@@ -137,7 +137,8 @@ class LessonController extends Controller
             'currentPage' => (int)$page,
             'currentUserId' => (int)$id_user,
             'listIds' => $listIds,
-            'lastUpdated' => $lastUpdated
+            'lastUpdated' => $lastUpdated,
+            'isAdmin' => $isAdmin
         ]);
     }
 
