@@ -227,7 +227,7 @@ class AddTopicController extends Controller
             
             if (!$fileName) {
                 return response()->json([
-                    'success' => $qData, 
+                    'success' => false, 
                     'message' => 'No file'
                 ], 500);
             }

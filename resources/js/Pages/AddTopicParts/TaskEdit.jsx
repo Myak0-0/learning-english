@@ -82,7 +82,6 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
         formData.append("media_type", mediaTypeName);
                 
         questions.forEach((q, qIndex) => {
-            console.log(q);
             formData.append(`questions[${qIndex}][content]`, q.content || "");
             formData.append(`questions[${qIndex}][has_gap]`, q.has_gap ? 'true' : 'false');
 

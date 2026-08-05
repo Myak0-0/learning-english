@@ -168,6 +168,14 @@ class WordController extends Controller
         return response()->json(['error' => 'Ошибка переводчика'], 500);
     }
 
+    public function exist_word(Request $request) {
+        $word = $request->input('word');
+        
+        $words = Word::where('name', $word)->get();
+
+        return response()->json(['words' => $words]);
+    }
+
     public function bring_word_to_category(Request $request)
     {
         $this->check_admin($request);
@@ -239,12 +247,8 @@ class WordController extends Controller
             return response()->json([]);
         }
 
-        $userId = Auth::user()->id;
-
-        $words = Word::with(['timeOfRepeatings' => function ($query) use ($userId) {
-                            $query->where('user_id', $userId);
-                       }])
-                       ->where('name', 'LIKE', "%{$query}%")                       
+        $words = Word::where('name', 'LIKE', "%{$query}%")
+                       ->orWhere('translation', 'LIKE', "%{$query}%")
                        ->limit(10)->get();
 
         return response()->json([

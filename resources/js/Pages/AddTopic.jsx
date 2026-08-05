@@ -39,15 +39,17 @@ const AddTopic = ({ topic, currentPage, existingBlocks, mediaTypes, allWords, ex
         <div className="add-topic-container">
             <Head title={`Редактирование: ${topic.title}`} />
 
-            {isTheory ? (
-            <TheoryEdit currentPage={currentPage} existingBlocks={existingBlocks} allWords={allWords}
-                        mediaTypes={mediaTypes} handleMoveBlock={handleMoveBlock} topic={topic}
+            <div className="general-block">
+                {isTheory ? (
+                <TheoryEdit currentPage={currentPage} existingBlocks={existingBlocks} allWords={allWords}
+                            mediaTypes={mediaTypes} handleMoveBlock={handleMoveBlock} topic={topic}
+                            setErrorMessage={setErrorMessage}/>
+                ) : (
+                <TaskEdit answerTypes={answerTypes} mediaTypes={mediaTypes} topic={topic}
+                        existingTasks={existingTasks} currentPage={currentPage} handleMoveBlock={handleMoveBlock}
                         setErrorMessage={setErrorMessage}/>
-            ) : (
-            <TaskEdit answerTypes={answerTypes} mediaTypes={mediaTypes} topic={topic}
-                      existingTasks={existingTasks} currentPage={currentPage} handleMoveBlock={handleMoveBlock}
-                      setErrorMessage={setErrorMessage}/>
-            )}
+                )}
+            </div>
 
             <div className="pagination">
                 <Link onClick={(e) => handleRoute(e, currentPage - 1)} className={`${currentPage <= 1 && 'disabled'}`}>

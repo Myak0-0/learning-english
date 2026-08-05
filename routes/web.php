@@ -87,6 +87,9 @@ Route::post('/section/task-option/delete', [AddTopicController::class, 'task_opt
 
 
 
+Route::get('/words/get-exist-words', [WordController::class, 'exist_word'])
+    ->middleware(['auth', 'verified']);
+
 Route::get('/words/get-auto-translation', [WordController::class, 'translate_word'])
     ->middleware(['auth', 'verified']);
 
@@ -118,7 +121,8 @@ Route::post('/words/delete-word-from-category', [WordController::class, 'delete_
     ->middleware(['auth', 'verified']);      
     
 Route::post('/words/search', [WordController::class, 'search_word'])
-    ->middleware(['auth', 'verified']);   
+    ->middleware(['auth', 'verified']);
+
 
 
 

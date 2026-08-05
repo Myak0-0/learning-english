@@ -4,6 +4,7 @@ import axios from "axios";
 const CreateWord = ({ speakEnglishWord }) => {
     const [newWord, setNewWord] = useState({ name: '', translation: '', audio: null });
     const [isTranslating, setIsTranslating] = useState(false);
+    const [existWords, setExistWord] = useState([]);
 
     const handleAutoTranslate = async () => {
         const wordText = newWord.name.trim();
@@ -23,6 +24,10 @@ const CreateWord = ({ speakEnglishWord }) => {
                 
                 speakEnglishWord(wordText);
             }
+
+            const wordResponse = await axios.get('/words/get-exist-words', { params: { word: wordText }});
+            setExistWord(wordResponse.data.words);
+
         } catch (error) {
             console.error("Ошибка автоперевода:", error);
         } finally {
@@ -74,6 +79,17 @@ const CreateWord = ({ speakEnglishWord }) => {
                     </button>
                 )}
             </div>
+
+            {existWords && existWords.length > 0 && (
+                <div className="words-in-base">
+                    <h5>Слова в базе</h5>
+                    <div>
+                        {existWords.map((existWord, ind) => (
+                            <p key={ind}>{existWord.name} - {existWord.translation}</p>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             <input 
                 type="text" 

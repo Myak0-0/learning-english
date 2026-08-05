@@ -26,6 +26,18 @@ const AuthenticatedLayout = ({ header, children }) => {
         currentAudio = new Audio(`/word-audios/${audioFile}`);
         currentAudio.play().catch(error => console.log('Ошибка воспроизведения:', error));
     };
+
+    const speakEnglishWord = (text) => {
+        if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        
+        window.speechSynthesis.speak(utterance);
+        }
+    };
     
     const addWords = async (wordIds) => {
         if (!wordIds || wordIds.length === 0) return;
@@ -159,10 +171,10 @@ const AuthenticatedLayout = ({ header, children }) => {
                                         <div className='list'>
                                             {searchResults.map((word) => (
                                                 <div key={word.id} className='search-word'>                                            
-                                                    <p className='word-name'>{word.name}</p>
+                                                    <p className='word-name'>{word.name} - <span className='word-translation'>{word.translation}</span></p>
                                                     
                                                     <div className='actions'>
-                                                        <button className="btn-circle play" onClick={() => playAudio(word.audio)} title="Послушать">
+                                                        <button className="btn-circle play" onClick={() => word.audio ? playAudio(word.audio) : speakEnglishWord(word.name)} title="Послушать">
                                                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                                         </button>
 

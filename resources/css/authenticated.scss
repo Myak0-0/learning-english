@@ -24,9 +24,14 @@
     &.open {        
         transform: translateX(0);
         z-index: 50;
+        height: 100vh;
 
         + .main-wrapper {
             margin-left: 350px;
+
+            .search {
+                margin-right: 350px;
+            }
         }
     }    
 
@@ -136,7 +141,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        position: relative;
+        position: fixed;
+        z-index: 20;
 
         div.content {
             font-size: 1.5rem;
@@ -201,6 +207,10 @@
                     align-items: center;
                     padding: 8px 0;
                     border-bottom: 1px solid #eee;
+
+                    .word-translation {
+                        color: $text-secondary;
+                    }
                 }
 
                 &.empty {
@@ -283,5 +293,6 @@
     main.content {
         padding: 20px 2%;
         flex: 1;
+        margin-top: calc(5rem);
     }
 }

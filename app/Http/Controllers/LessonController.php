@@ -106,6 +106,10 @@ class LessonController extends Controller
         $lastUpdated = UserTaskAnswer::where('user_id', $id_user)
                                        ->whereIn('task_option_id', $listIds)
                                        ->max('updated_at');
+        
+        if (!$lastUpdated) {
+            $lastUpdated = UserTaskAnswer::where('user_id', $id_user)->max('updated_at');
+        }
 
         foreach ($topic->theoryBlocks as $block) {
             if ($block->typeOfMedia->name === 'word') {

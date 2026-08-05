@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import arrow_answer from '../../../../images/arrow-answer.webp';
 import { router } from '@inertiajs/react';
 
-const Text = ({task, taskNumber, answerType, 
+const Text = ({task, taskNumber, answerType,
                handleSelectChoice,
                veritifyAnswer,
                handleInputChange,
@@ -161,7 +161,7 @@ const Text = ({task, taskNumber, answerType,
                                             </ul>
                                         )}
 
-                                        {question.answer_options && isAdmin && (
+                                        {question.answer_options && question.answer_options.length > 0 && isAdmin && (
                                             <ul className="answer-box">
                                                 {question.answer_options.map((answer, answerId) => (                                                    
                                                     <li key={answerId}>{answer.answer}</li>                                                    

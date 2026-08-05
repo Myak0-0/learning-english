@@ -132,6 +132,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        flex-wrap: wrap;
 
         .foreign { font-weight: 600; color: $text-main; }
         .separator { color: $text-secondary; }
@@ -155,6 +156,7 @@
     border: none;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    flex-shrink: 0;
 
     svg { width: 1rem; height: 1rem; }
 
@@ -253,6 +255,19 @@
           transition: all 0.15s;
           
           &:hover { background-color: $primary-hover; }
+        }
+
+        .words-in-base {
+          h5 {
+            font-size: 0.9rem;
+          }
+
+          > div {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin: 5px 0 0 10px;
+          }
         }
       }
     }

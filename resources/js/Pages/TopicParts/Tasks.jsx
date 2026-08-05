@@ -89,6 +89,8 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
         };
 
         const fetchNewAnswers = async () => {
+            if (!maxUpdatedAt) return;
+            
             try {
                 const response = await axios.post('/get-new-answers', {
                     list_ids: listIds, 
@@ -201,10 +203,23 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
 
     const cleanText = (text) => {
         if (!text) return '';
-        return text.toString()
-            .toLowerCase()
-            .trim()
-            .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
+
+        let str = text.toString().toLowerCase().trim();
+
+        str = str
+            .replace(/n't\b/g, " not")
+            .replace(/'m\b/g, " am")
+            .replace(/'re\b/g, " are")
+            .replace(/'s\b/g, " is")
+            .replace(/'ll\b/g, " will")
+            .replace(/'ve\b/g, " have")
+            .replace(/'d\b/g, " would");
+
+        str = str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?«»'"]/g, "");
+
+        str = str.replace(/\s+/g, " ");
+
+        return str;
     };
 
     const veritifyAnswer = (task_id, answerType, question, option_for_option_id = null, user_answer) => {
@@ -216,18 +231,15 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
         const stateKey = answerType === 'choice' ? option_for_option_id : 0;
         
         let real_answer;
-        let isCorrect;
         if (answerType == 'choice') {            
-            real_answer = question.answer_options.find(opt => opt.option_for_task_option_id == stateKey);
-            isCorrect = cleanText(real_answer.answer) == cleanText(user_answer);
+            real_answer = question.answer_options.find(opt => opt.option_for_task_option_id == stateKey && cleanText(opt.answer) == cleanText(user_answer));            
         } else if (answerType == 'input') {
             real_answer = question.answer_options.find(opt => cleanText(opt.answer) == cleanText(user_answer));
-            isCorrect = real_answer;
         } else if (answerType == 'no-answer') {
-            isCorrect = 1;
+            real_answer = 1;
         }
 
-        if (isCorrect) {
+        if (real_answer) {
             if (answerType != 'no-answer') {
                 setAnswerStates(prev => ({
                     ...prev,
