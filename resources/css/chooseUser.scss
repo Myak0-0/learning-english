@@ -28,9 +28,10 @@
 
         .window {
             background: white;
-            padding: 16px 20px;
+            padding: 16px;
             border-radius: 10px;      
-            max-width: 450px;
+            max-width: 350px;
+            width: 80%;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
             form {
@@ -47,7 +48,8 @@
                     padding: 10px 12px;
                     border: 1px solid $border-color;
                     border-radius: 4px;
-                    transition: all 0.15s;                        
+                    transition: all 0.15s;
+                    font-size: 0.9rem;
 
                     &:focus { border-color: $primary-color; }
 

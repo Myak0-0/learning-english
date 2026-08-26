@@ -23,6 +23,7 @@ class LessonController extends Controller
 
         if ($is_admin) {
             $items = Section::where('parent_id', $parentId)
+                ->orderBy('is_topic')
                 ->orderBy('order')
                 ->get();
         } else {
@@ -39,6 +40,7 @@ class LessonController extends Controller
                 ->select('sections.*')
                 ->where('sections.parent_id', $parentId)
                 ->where('user_rights.user_id', $currentUser->id)
+                ->orderBy('is_topic')
                 ->orderBy('user_rights.created_at', 'desc')
                 ->get();
         }

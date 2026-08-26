@@ -123,6 +123,9 @@ Route::post('/words/delete-word-from-category', [WordController::class, 'delete_
 Route::post('/words/search', [WordController::class, 'search_word'])
     ->middleware(['auth', 'verified']);
 
+Route::post('/words/update-translation', [WordController::class, 'update_translation'])
+    ->middleware(['auth', 'verified']);    
+
 
 
 

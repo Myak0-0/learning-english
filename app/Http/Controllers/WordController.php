@@ -324,4 +324,22 @@ class WordController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function update_translation(Request $request) {
+        $this->check_admin($request);
+
+        $validated = $request->validate([
+            'word_id' => 'required|integer|exists:words,id',
+            'word_name' => 'required|string',
+            'translation' => 'required|string'
+        ]);
+
+        $word = Word::findOrFail($validated['word_id']);
+        $word->update([
+            'name' => $validated['word_name'],
+            'translation' => $validated['translation']
+        ]);
+
+        return response()->json(['success' => true]); 
+    }
 }

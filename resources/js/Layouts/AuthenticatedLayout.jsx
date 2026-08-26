@@ -170,7 +170,7 @@ const AuthenticatedLayout = ({ header, children }) => {
                                     searchResults.length > 0 ? (
                                         <div className='list'>
                                             {searchResults.map((word) => (
-                                                <div key={word.id} className='search-word'>                                            
+                                                <div key={word.id} className='search-word'>
                                                     <p className='word-name'>{word.name} - <span className='word-translation'>{word.translation}</span></p>
                                                     
                                                     <div className='actions'>

@@ -18,6 +18,8 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
 
     const [errorMessage, setErrorMessage] = useState(null);
 
+    // const [preMediaType, setPreMediaType] = useState(null);
+
     let maxUpdatedAt = lastUpdated;
 
     useEffect(() => {
@@ -303,6 +305,7 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
             const mediaType = task.type_of_media.name;
             const taskNumber = taskID + 1;
             const answerType = task.type_of_answer.name;
+            const preMediaType = tasks[taskID - 1] ? tasks[taskID - 1].type_of_media.name : null;
                         
             if (mediaType === 'text') {
                 return (
@@ -324,7 +327,8 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                     <DialoguePage 
                         key={task.id} 
                         task={task} taskNumber={taskNumber}
-                        formatTheoryText={formatTheoryText}/>
+                        formatTheoryText={formatTheoryText}
+                        preMediaType={preMediaType}/>
                 );
             }
             if (mediaType === 'image') {
