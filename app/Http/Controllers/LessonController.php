@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Section;
-use App\Models\TaskOption;
-use App\Models\User;
 use App\Models\UserRight;
 use App\Models\UserTaskAnswer;
 use App\Models\UserTimeOfRepeating;
@@ -12,7 +10,6 @@ use App\Models\Word;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class LessonController extends Controller

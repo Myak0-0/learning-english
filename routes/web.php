@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddTopicController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\AudioController;
+use App\Http\Controllers\DeskController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\UserSelectController;
 use App\Http\Controllers\WordController;
@@ -36,7 +37,13 @@ Route::post('/save-task-answer', [AnswerController::class, 'remember_answer'])
     ->middleware(['auth', 'verified']);
 
 Route::post('/get-new-answers', [LessonController::class, 'get_new_answers'])
-    ->middleware(['auth', 'verified']);        
+    ->middleware(['auth', 'verified']);
+
+Route::post('/topic/{topic_id}/desk-update', [DeskController::class, 'desk_update'])
+    ->middleware(['auth', 'verified']);
+
+Route::post('/topic/{topic_id}/desk-check', [DeskController::class, 'desk_check'])
+    ->middleware(['auth', 'verified']);
 
 
 
