@@ -29,7 +29,7 @@ const Image = ({task, taskNumber, answerType,
     const count_pictures = task.task_options.length;                
     return (
         <div key={task.id}>
-            <h3 className="title">📝 {taskNumber + '. ' + task.description}</h3>
+            <h3 className="title">{task.numeric ? '📝' + taskNumber + '. ' + task.description : task.description}</h3>
             <div className={`image-block ${count_pictures == 1 ? 'one-picture' : ''}`}>
 
             {task.task_options && task.task_options.map((question) => {

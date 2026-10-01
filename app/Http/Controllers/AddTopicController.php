@@ -97,8 +97,14 @@ class AddTopicController extends Controller
         $validated = $request->validate([
             'title'     => 'required|string|max:255',
             'is_topic'  => 'required|boolean',
-            'parent_id' => 'nullable|integer|exists:sections,id', 
+            'parent_id' => 'nullable|integer|exists:sections,id',
+            'link'      => 'required|string'
         ]);
+
+        $link = null;
+        if ($validated['link'] != 'NEW_LESSON' && $validated['is_topic']) {
+            $link = $validated['link'];
+        }
 
         $title_exists = Section::where('parent_id', $validated['parent_id'])
                  ->where('title', $validated['title'])->exists();
@@ -124,6 +130,7 @@ class AddTopicController extends Controller
             'is_topic'  => $validated['is_topic'],
             'parent_id' => $validated['parent_id'],
             'order'     => $nextOrder,
+            'link_id'   => $link
         ]);
         return redirect()->back();
     }
@@ -282,16 +289,18 @@ class AddTopicController extends Controller
         $this->check_admin($request);
 
         $validated = $request->validate([
-            'section_id'    => 'required|integer|exists:sections,id',
-            'page'          => 'required|integer',
-            'description'   => 'required|string|max:255',
-            'answer_type'   => 'required|string|exists:type_of_answers,name',
-            'media_type'    => 'required|string|exists:type_of_media,name',            
-            'questions'     => 'required|array|min:1',
+            'section_id'      => 'required|integer|exists:sections,id',
+            'page'            => 'required|integer',
+            'description'     => 'required|string|max:255',
+            'task_numeration' => 'required|string',
+            'answer_type'     => 'required|string|exists:type_of_answers,name',
+            'media_type'      => 'required|string|exists:type_of_media,name',            
+            'questions'       => 'required|array|min:1',
         ]);
 
         $answerTypeObj = TypeOfAnswer::where('name', $validated['answer_type'])->firstOrFail();
         $mediaTypeObj = TypeOfMedia::where('name', $validated['media_type'])->firstOrFail();
+        $task_numeration = $validated['task_numeration'] === 'true' ? true : false;
 
         DB::beginTransaction();
 
@@ -308,12 +317,14 @@ class AddTopicController extends Controller
                 'description'        => $validated['description'],                
                 'page'               => $validated['page'],
                 'order'              => $nextTaskOrder,
+                'numeric'            => $task_numeration
             ]);
 
             $taskId = $taskCreate->id;
 
             foreach ($request->input('questions') as $qIndex => $qData) {
                 
+                $task_option_numeration = $qData['numeration'] === 'true' ? true : false;
                 $finalContent = $qData['content'];
 
                 if ($validated['media_type'] === 'image' || $validated['media_type'] === 'audio') {
@@ -348,6 +359,7 @@ class AddTopicController extends Controller
                     'task_id'    => $taskId,
                     'content'    => $finalContent,
                     'order'      => $qIndex,
+                    'numeric'    => $task_option_numeration
                 ]);
 
                 $questionId = $TaskOptionCreate->id;
@@ -525,11 +537,14 @@ class AddTopicController extends Controller
         $this->check_admin($request);
 
         $validated = $request->validate([
-            'task_id'       => 'required|integer|exists:tasks,id',
-            'description'   => 'required|string|max:255',
-            'media_content' => 'nullable|string',
-            'questions'     => 'required|array',
+            'task_id'        => 'required|integer|exists:tasks,id',
+            'description'    => 'required|string|max:255',
+            'media_content'  => 'nullable|string',
+            'taskNumeration' => 'required',
+            'questions'      => 'required|array',
         ]);
+
+        $task_numeration = $validated['taskNumeration'];
 
         DB::beginTransaction();
 
@@ -537,26 +552,30 @@ class AddTopicController extends Controller
             $task = Task::findOrFail($validated['task_id']);
             
             $task->update([
-                'description' => $validated['description']
+                'description' => $validated['description'],
+                'numeric'     => $task_numeration
             ]);
 
             foreach ($validated['questions'] as $qIndex => $qData) {
                 if (!$qData['content']) return;
                 
                 $questionId = $qData['id'] ?? null;
+                $option_numeration = $qData['numeration'];
 
                 if (is_null($questionId)) {
                     $question = TaskOption::create([
                         'task_id' => $task->id,
                         'content' => $qData['content'],
-                        'order'   => $qIndex
+                        'order'   => $qIndex,
+                        'numeric' => $option_numeration
                     ]);
                 } else {
                     $question = TaskOption::findOrFail($questionId);
                     
                     $question->update([
                         'content' => $qData['content'],
-                        'order'   => $qIndex
+                        'order'   => $qIndex,
+                        'numeric' => $option_numeration
                     ]);
                 }
 

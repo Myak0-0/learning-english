@@ -25,7 +25,7 @@ Route::post('/user/create', [UserSelectController::class, 'user_create'])
 
 
 
-Route::get('/lessons/{parentId?}', [LessonController::class, 'showFoldel'])
+Route::get('/lessons/{parentId?}', [LessonController::class, 'showFolder'])
     ->middleware(['auth', 'verified'])
     ->name('lessons');
 

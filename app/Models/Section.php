@@ -14,7 +14,8 @@ class Section extends Model
         'title',
         'parent_id',
         'is_topic',
-        'order'
+        'order',
+        'link_id'
     ];
 
     public function parent() { return $this->belongsTo(Section::class, 'parent_id'); }

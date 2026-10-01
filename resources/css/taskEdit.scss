@@ -80,6 +80,28 @@
                 margin-top: 5px;
                 line-height: 1.4;
             }
+
+            .numeric-status {
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 4px 8px;
+                border-radius: 4px;
+            }
+
+            .numeric-status.is-numeric {
+                background-color: rgb($correct, 0.1);
+                color: $correct;
+                border: 1px solid rgb($correct, 0.2);
+            }
+
+            .numeric-status.is-not-numeric {
+                background-color: rgb($error, 0.1);
+                color: $error;
+                border: 1px solid rgb($error, 0.2);
+            }
+
         }
 
         > .actions {
@@ -289,6 +311,15 @@
             font-size: 0.9rem;
             font-weight: 600;
             color: $text-main;
+        }
+
+        &.direction-row {
+            flex-direction: row;
+            justify-content: space-between;
+
+            input {
+                width: 1rem;
+            }
         }
         
         label.choose-options {

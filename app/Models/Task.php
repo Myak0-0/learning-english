@@ -12,7 +12,8 @@ class Task extends Model
         'description',
         'type_of_media_id',
         'order',
-        'page'
+        'page',
+        'numeric'
     ];
 
     public function section() { return $this->belongsTo(Section::class); }

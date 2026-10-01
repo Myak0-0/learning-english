@@ -9,7 +9,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import axios from 'axios';
 
-const Lessons = ({ items, currentFolder, is_admin }) => {
+const Lessons = ({ items, currentFolder, is_admin, link_topic }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
 
@@ -69,9 +69,11 @@ const Lessons = ({ items, currentFolder, is_admin }) => {
                     ) : (
                         items.map((item) => {
                             const isTopic = item.is_topic === 1;
+                            const link_id = item.link_id && isTopic ? item.link_id : item.id;
+
                             const targetUrl = isTopic 
-                                ? route('topic', {id: item.id, page: 1}) 
-                                : route('lessons', item.id);
+                                ? route('topic', {id: link_id, page: 1}) 
+                                : route('lessons', link_id);
 
                             return (
                                 <Link 
@@ -90,7 +92,7 @@ const Lessons = ({ items, currentFolder, is_admin }) => {
                                         <button className='delete' onClick={(e) => handle_deliting(e, item.id)}>✕</button>
                                         
                                         {isTopic &&
-                                            <button className='edit' onClick={(e) => handle_editing(e, item.id)}><img src={pencil} alt="pencil"/></button>
+                                            <button className='edit' onClick={(e) => handle_editing(e, link_id)}><img src={pencil} alt="pencil"/></button>
                                         }
                                         </>
                                     }
@@ -104,6 +106,7 @@ const Lessons = ({ items, currentFolder, is_admin }) => {
                     <AddSectionModal 
                         currentFolder={currentFolder}
                         onClose={() => setIsModalOpen(false)}
+                        link_topic={link_topic}
                     />
                 )}
                 <Error text={errorMessage}/>

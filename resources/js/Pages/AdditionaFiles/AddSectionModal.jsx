@@ -1,11 +1,12 @@
 import { useForm } from '@inertiajs/react';
 import '../../../css/addSectionModal.scss';
 
-const AddSectionModal = ({ currentFolder, onClose }) => {
+const AddSectionModal = ({ currentFolder, onClose, link_topic }) => {
     const { data, setData, post, processing, errors, reset } = useForm({
         title: '',
         is_topic: false,
         parent_id: currentFolder?.id || null,
+        link: 'NEW_LESSON'
     });
 
     const handleSubmit = (e) => {
@@ -31,7 +32,7 @@ const AddSectionModal = ({ currentFolder, onClose }) => {
                 </div>
 
                 {currentFolder &&
-                    <div>Текущая папка: {currentFolder.title }</div>
+                    <p className='current-folder'>Текущая папка: <span className='folder-emphasis'>{currentFolder.title }</span></p>
                 }
 
                 <form onSubmit={handleSubmit}>
@@ -71,6 +72,18 @@ const AddSectionModal = ({ currentFolder, onClose }) => {
                             </label>
                         </div>
                     </div>
+
+                    {data.is_topic && (
+                    <div className='group-item'>
+                        <label>Ссылка на урок</label>
+                        <select className='link-select' onChange={(e) => setData('link', e.target.value)}>
+                            <option value="NEW_LESSON">Новый урок</option>
+                            {link_topic.map((link, $index) => (
+                                <option key={$index} value={link.id}>{link.title}</option>
+                            ))}
+                        </select>
+                    </div>
+                    )}
 
                     <button 
                         type="submit" 

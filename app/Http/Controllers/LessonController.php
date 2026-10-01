@@ -14,15 +14,18 @@ use Inertia\Inertia;
 
 class LessonController extends Controller
 {
-    public function showFoldel($parentId = null)
+    public function showFolder($parentId = null)
     {
         $is_admin = Auth::user()->admin();
+        $link_topic = '';
 
         if ($is_admin) {
             $items = Section::where('parent_id', $parentId)
                 ->orderBy('is_topic')
                 ->orderBy('order')
                 ->get();
+
+            $link_topic = Section::where('is_topic', true)->get(['id', 'title']);
         } else {
             $currentUser = Auth::user();
 
@@ -47,7 +50,8 @@ class LessonController extends Controller
         return Inertia::render('Lessons', [
             'items' => $items,
             'currentFolder' => $currentFolder,
-            'is_admin' => $is_admin
+            'is_admin' => $is_admin,
+            'link_topic' => $link_topic
         ]);
     }
 
@@ -82,21 +86,28 @@ class LessonController extends Controller
                     ->orderBy('order')
                     ->with('typeOfMedia');
             },            
-            'tasks' => function ($query) use ($page, $id_user) {
+            'tasks' => function ($query) use ($page, $id_user, $isAdmin) {
                 $query->where('page', $page)
                     ->orderBy('order')
                     ->with([
                         'typeOfMedia', 
                         'typeOfAnswer',                         
-                        'taskOptions' => function ($q) use ($id_user) {
+                        'taskOptions' => function ($q) use ($id_user, $isAdmin) {
                             $q->orderBy('order')
-                                ->with(['optionForTaskOptions', 'answerOptions', 'taskAnswers' => function ($q) use ($id_user) {
+                                ->with(['optionForTaskOptions', 'taskAnswers' => function ($q) use ($id_user) {
                                     $q->where('user_id', $id_user);
                                 }]);
+                            if ($isAdmin) {
+                                $q->with('answerOptions');
+                            }
                         }                        
                     ]);
             }
         ]);
+
+        $hasNextPageData = $topic->theoryBlocks()->where('page', $page + 1)->exists() 
+            || $topic->tasks()->where('page', $page + 1)->exists();
+        
 
         $listIds = $topic->tasks->flatMap(function ($task) {
             return $task->taskOptions->pluck('id');
@@ -141,7 +152,8 @@ class LessonController extends Controller
             'currentUserId' => (int)$id_user,
             'listIds' => $listIds,
             'lastUpdated' => $lastUpdated,
-            'isAdmin' => $isAdmin
+            'isAdmin' => $isAdmin,
+            'hasNextPageData' => $hasNextPageData
         ]);
     }
 

@@ -3,14 +3,16 @@ import '../../../css/TaskEdit.scss';
 import { router } from "@inertiajs/react";
 import ModalTaskEdit from "./ModalTaskEdit";
 import pencil from '../../../images/pencil.webp';
+import axios from "axios";
 
 const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, handleMoveBlock, setErrorMessage}) => {    
     const [description, setDescription] = useState("");
+    const [taskNumeration, setTaskNumeration] = useState(true);
     const [answerTypeName, setAnswerTypeName] = useState("input");
     const [mediaTypeName, setMediaTypeName] = useState("text");
 
     const [questions, setQuestions] = useState([
-        { content: "", gaps: [] }
+        { content: "", numeration: true, gaps: [] }
     ]);
 
     const [editingTask, setEditingTask] = useState(null);
@@ -30,8 +32,15 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
         }));
     };
 
+    const handleQuestionNumerationChange = (qIdx, isChecked) => {
+        setQuestions(prev => prev.map((q, idx) => {
+            if (idx !== qIdx) return q;
+            return { ...q, numeration: isChecked };
+        }));
+    };
+
     const handleAddQuestionRow = () => {
-        setQuestions([...questions, { content: "", gaps: [] }]);
+        setQuestions([...questions, { content: "", numeration: true, gaps: [] }]);
     };
 
     const handleRemoveQuestionRow = (qIdx) => {
@@ -78,11 +87,13 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
         formData.append("section_id", topic.id);
         formData.append("page", currentPage);
         formData.append("description", description);
+        formData.append("task_numeration", taskNumeration ? 'true' : 'false')
         formData.append("answer_type", answerTypeName);
         formData.append("media_type", mediaTypeName);
                 
         questions.forEach((q, qIndex) => {
             formData.append(`questions[${qIndex}][content]`, q.content || "");
+            formData.append(`questions[${qIndex}][numeration]`, q.numeration ? 'true' : 'false');
             formData.append(`questions[${qIndex}][has_gap]`, q.has_gap ? 'true' : 'false');
 
             if (q.gaps && Array.isArray(q.gaps)) {
@@ -108,7 +119,7 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
         axios.post("/section/task-block/add", formData)        
         .then(() => {
             setDescription("");
-            setQuestions([{ content: "", gaps: [] }]);
+            setQuestions([{ content: "", numeration: true, gaps: [] }]);
             router.reload();
         })
         .catch(err => console.error("Ошибка сохранения блока задач:", err));
@@ -152,6 +163,9 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
                                 <div className="title">
                                     <span className="number">Задание №{tIdx + 1}</span>
                                     <span className="type-answer">{task.type_of_answer.name}</span>
+                                    <span className={`numeric-status ${task.numeric ? 'is-numeric' : 'is-not-numeric'}`}>
+                                        {task.numeric ? '🔢 Нумеруется' : '🚫 Без нумерации'}
+                                    </span>
                                     <p className="description">📝 {task.description}</p>
                                 </div>
                                 <div className="actions">
@@ -224,6 +238,16 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
                         />
                     </div>
 
+                    <div className="form-item-box direction-row">
+                        <label htmlFor="numeration-checkbox">Нумерация</label>
+                        <input 
+                            id="numeration-checkbox"
+                            type="checkbox" 
+                            checked={taskNumeration}
+                            onChange={() => setTaskNumeration(prev => !prev)}
+                        />
+                    </div>
+
                     <div className="form-task-input">
                         <div className="form-item-box">
                             <label>Проверка (Тип ответа):</label>
@@ -253,6 +277,16 @@ const TaskEdit = ({answerTypes, mediaTypes, topic, currentPage, existingTasks, h
                                 )}
                             </div>
 
+                            <div className="form-item-box direction-row">
+                                <label htmlFor={`num-chbox-${qIdx}`}>Нумерация</label>
+                                <input 
+                                    id={`num-chbox-${qIdx}`}
+                                    type="checkbox" 
+                                    checked={question.numeration}
+                                    onChange={(e) => handleQuestionNumerationChange(qIdx, e.target.checked)}
+                                />
+                            </div>
+                            
                             <div className="form-item-box">
                                 <label>Текст вопроса:</label>
                                 

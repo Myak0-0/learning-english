@@ -17,9 +17,9 @@ import Desk from './TopicParts/Desk';
 let currentAudio = null;
 
 const TopicShow = ({ topic, currentPage, currentUserId, listIds, 
-    lastUpdated, isAdmin }) => {
+    lastUpdated, isAdmin, hasNextPageData }) => {
 
-    const [deckIsHidden, setDeckIsHidden] = useState(true);
+    const [deskIsHidden, setDeskIsHidden] = useState(true);
     const no_info = topic.theory_blocks.length == 0 && topic.tasks.length == 0;
 
     const playAudio = (audioFile) => {
@@ -77,6 +77,12 @@ const TopicShow = ({ topic, currentPage, currentUserId, listIds,
     return (
         <>
             <Head title={topic.title} />
+
+            <Link className='link-go-to-back'
+                href={route('lessons', topic.parent_id || '')}                             
+            >
+                ⬅ Вернуться к разделу
+            </Link>
             
             <div className='topic-desk'>
             
@@ -134,15 +140,15 @@ const TopicShow = ({ topic, currentPage, currentUserId, listIds,
                             Назад
                         </Link>
                         <span>Страница {currentPage}</span>
-                        <Link onClick={(e) => {if (no_info) e.preventDefault()}} href={route('topic', { id: topic.id, page: currentPage + 1 })} className={`${no_info && 'disabled'}`} >
+                        <Link onClick={(e) => {if (no_info || !hasNextPageData) e.preventDefault()}} href={route('topic', { id: topic.id, page: currentPage + 1 })} className={`${(no_info || !hasNextPageData) && 'disabled'}`} >
                             Вперед
                         </Link>
                     </div>
                 </div>
 
-                <section className={`${deckIsHidden ? '' : 'active'} edit-desk`}>
-                    <div className='deck-border'>
-                        <button onClick={() => setDeckIsHidden(!deckIsHidden)} className='deck-button'>{deckIsHidden ? '◀' : '▶'}</button>
+                <section className={`${deskIsHidden ? '' : 'active'} edit-desk`}>
+                    <div className='desk-border'>
+                        <button onClick={() => setDeskIsHidden(!deskIsHidden)} className='desk-button'>{deskIsHidden ? '◀' : '▶'}</button>
                     </div>
                     <Desk topicId={topic.id}/>
                 </section>

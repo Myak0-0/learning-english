@@ -5,7 +5,7 @@ const Dialogue = ({task, taskNumber, formatTheoryText, preMediaType}) => {
     return (
         <div key={task.id}>
             <div className="dialogue-tab title">
-                <h3>📝 {taskNumber + '. ' + task.description}</h3>
+                <h3>{task.numeric ? '📝' + taskNumber + '. ' + task.description : task.description}</h3>
                 {(preMediaType === 'audio' || preMediaType === 'video') &&
                     <span className="show-tab" onClick={() => setIsOpenTab(!isOpenTap)}>{isOpenTap ? 'Скрыть текст' : 'Показать'}</span>
                 }

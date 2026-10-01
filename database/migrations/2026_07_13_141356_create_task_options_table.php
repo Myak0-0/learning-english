@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
             $table->text('content');
             $table->integer('order')->default(0);
+            $table->boolean('numeric')->default(true);
         });
     }
 

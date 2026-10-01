@@ -26,18 +26,23 @@ const Text = ({task, taskNumber, answerType,
         checkAdmin();
     }, [isAdmin]);
 
+    let optionNumber = 0;
+
     return (
     <div key={task.id}>
-        <h3 className="title">📝 {taskNumber + '. ' + task.description}</h3>
+        <h3 className="title">{task.numeric ? '📝' + taskNumber + '. ' + task.description : task.description}</h3>
         <div className="questions-list">
             {task.task_options && task.task_options.map((question, index) => {
+                if (question.numeric) {
+                    optionNumber += 1;
+                }
                 
                 if (answerType === 'choice') {
                     const textParts = question.content.split('(___)');
                     
                     return (
                         <div key={question.id} className="question-row choice-row">
-                            <span className="question-number">{index + 1}.</span>
+                            <span className="question-number">{optionNumber}.</span>
                             <div>
                                 {textParts.map((part, partIndex) => {
                                     const hasGapAfter = partIndex < textParts.length - 1;
@@ -118,7 +123,6 @@ const Text = ({task, taskNumber, answerType,
                 if (answerType === 'input' || answerType === 'no-answer') {
                     const hasGap = question.content.includes('(___)');
                     const cleanText = question.content.replace(/\(___\)/g, '').trim();
-                    const hasOwnNumeration = /^\d+\./.test(task.task_options[0].content);
                     const currentInputValue = userAnswers[question.id]?.[0] || '';
 
                     const inputStateClass = answerStates[question.id]?.[0] || '';
@@ -128,9 +132,9 @@ const Text = ({task, taskNumber, answerType,
                     return (
                         <div key={question.id} className="question-row input-row">
                             <div className="text-side">                                            
-                                {!hasOwnNumeration && (
-                                    <span className="question-number">{index + 1}.</span>
-                                )}
+                                {question.numeric ? (
+                                    <span className="question-number">{optionNumber}.</span>
+                                ) : ''}
                                 <p>{cleanText}</p>
                             </div>
                             

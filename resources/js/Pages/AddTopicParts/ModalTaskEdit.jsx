@@ -6,6 +6,7 @@ import pencil from '../../../images/pencil.webp';
 
 const ModalTaskEdit = ({ task, onClose }) => {
     const [description, setDescription] = useState(task?.description || "");
+    const [taskNumeration, setTaskNumeration] = useState(task?.numeric);
     const [answerTypeName, setAnswerTypeName] = useState(task?.type_of_answer?.name || "input");
     const [mediaContent, setMediaContent] = useState(task?.content?.content || "");
 
@@ -49,7 +50,8 @@ const ModalTaskEdit = ({ task, onClose }) => {
             return {
                 id: option.id,
                 content: option.content,
-                gaps: gapsData
+                gaps: gapsData,
+                numeration: option.numeric
             };
         });
 
@@ -66,6 +68,13 @@ const ModalTaskEdit = ({ task, onClose }) => {
                 return q.gaps[gapIdx] || { id: null, options: "", answers: [""] };
             });
             return { ...q, content: text, gaps: updatedGaps };
+        }));
+    };
+
+    const handleQuestionNumerationChange = (qIdx, isChecked) => {
+        setQuestions(prev => prev.map((q, idx) => {
+            if (idx !== qIdx) return q;
+            return { ...q, numeration: isChecked };
         }));
     };
 
@@ -99,12 +108,11 @@ const ModalTaskEdit = ({ task, onClose }) => {
     const handleUpdateTaskBlock = (e) => {
         e.preventDefault();
 
-        console.log(questions);
-
         axios.post("/section/task-block/update", {
             task_id: task.id,
             description: description,
             media_content: mediaContent,
+            taskNumeration: taskNumeration,
             questions: questions
         })
         .then(() => {
@@ -115,9 +123,9 @@ const ModalTaskEdit = ({ task, onClose }) => {
     };
 
     const handleAddQuestionRow = () => {
-        setQuestions([...questions, { id: null, content: "", gaps: [] }]);
+        setQuestions([...questions, { id: null, content: "", gaps: [], numeration: true }]);
     };
-
+    
     return (
         <div className="modal-update-task" onClick={onClose}>
             <div className="side-form" onClick={(e) => e.stopPropagation()}>
@@ -130,6 +138,16 @@ const ModalTaskEdit = ({ task, onClose }) => {
                             <label>Описание задания:</label>
                             <input placeholder="Description" type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
                         </div>
+
+                        <div className="form-item-box direction-row">
+                            <label htmlFor="numeration-checkbox">Нумерация</label>
+                            <input 
+                                id="numeration-checkbox"
+                                type="checkbox" 
+                                checked={taskNumeration}
+                                onChange={() => setTaskNumeration(prev => !prev)}
+                            />
+                        </div>
                     </div>
 
                     <div className="form-task-questions">
@@ -137,6 +155,17 @@ const ModalTaskEdit = ({ task, onClose }) => {
                         {questions.map((question, qIdx) => (
                             <div key={qIdx} className="task-row-question">
                                 <span className="number">Вопрос №{qIdx + 1}</span>
+
+                                <div className="form-item-box direction-row">
+                                    <label htmlFor={`num-chbox-${qIdx}`}>Нумерация</label>
+                                    <input 
+                                        id={`num-chbox-${qIdx}`}
+                                        type="checkbox" 
+                                        checked={question.numeration}
+                                        onChange={(e) => handleQuestionNumerationChange(qIdx, e.target.checked)}
+                                    />
+                                </div>
+
                                 <div className="form-item-box">
                                     <label>Текст вопроса:</label>
                                     <input 

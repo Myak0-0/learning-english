@@ -18,8 +18,6 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
 
     const [errorMessage, setErrorMessage] = useState(null);
 
-    // const [preMediaType, setPreMediaType] = useState(null);
-
     let maxUpdatedAt = lastUpdated;
 
     useEffect(() => {
@@ -231,85 +229,75 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
         const questionId = question.id;
 
         const stateKey = answerType === 'choice' ? option_for_option_id : 0;
-        
-        let real_answer;
-        if (answerType == 'choice') {            
-            real_answer = question.answer_options.find(opt => opt.option_for_task_option_id == stateKey && cleanText(opt.answer) == cleanText(user_answer));            
-        } else if (answerType == 'input') {
-            real_answer = question.answer_options.find(opt => cleanText(opt.answer) == cleanText(user_answer));
-        } else if (answerType == 'no-answer') {
-            real_answer = 1;
-        }
 
-        if (real_answer) {
-            if (answerType != 'no-answer') {
+        axios.post('/save-task-answer', {
+            user_id: currentUserId,
+            task_id: task_id,
+            task_option_id: questionId,
+            option_for_task_option_id: option_for_option_id || null,
+            answer: user_answer
+        }).then(res => {
+            const is_correct = res?.data?.is_correct; 
+            if (answerType == 'no-answer') {
+                return;
+            }
+
+            if (is_correct) {
                 setAnswerStates(prev => ({
                     ...prev,
                     [questionId]: { ...prev[questionId], [stateKey]: 'correct' }
                 }));
-            }
-
-            axios.post('/save-task-answer', {
-                user_id: currentUserId,
-                task_id: task_id,
-                task_option_id: questionId,
-                option_for_task_option_id: option_for_option_id || null,
-                answer: user_answer,                
-                is_correct: true
-            }).catch(err => console.error("Ошибка сохранения ответа:", err));
-
-        } else {
-            const pastErrors = errorHistory[questionId]?.[stateKey] || [];
-            
-            if (pastErrors.includes(cleanText(user_answer))) {
-                if (!errorMessage) {
-                    setErrorMessage(`Вы уже выбирали вариант "${user_answer}", и он неверный!`);
-                    setTimeout(() => {
-                        setErrorMessage(null);
-                    }, 4000)
+            } else {
+                const pastErrors = errorHistory[questionId]?.[stateKey] || [];
+        
+                if (pastErrors.includes(cleanText(user_answer))) {
+                    if (!errorMessage) {
+                        setErrorMessage(`Вы уже выбирали вариант "${user_answer}", и он неверный!`);
+                        setTimeout(() => {
+                            setErrorMessage(null);
+                        }, 4000)
+                    }
+                    return;
                 }
-                return;
-            }
+                setErrorHistory(prev => ({
+                    ...prev,
+                    [questionId]: { ...prev[questionId], [stateKey]: [...pastErrors, cleanText(user_answer)] }
+                }));
 
-            setErrorHistory(prev => ({
-                ...prev,
-                [questionId]: { ...prev[questionId], [stateKey]: [...pastErrors, cleanText(user_answer)] }
-            }));
-
-            setShakingButtons(prev => ({
-                ...prev,
-                [questionId]: { ...prev[questionId], [stateKey]: 'shake-error' }
-            }));
-
-            axios.post('/save-task-answer', {
-                user_id: currentUserId,
-                task_id: task_id,
-                task_option_id: questionId,
-                option_for_task_option_id: option_for_option_id,
-                answer: user_answer,
-                is_correct: false
-            }).catch(err => console.error("Ошибка сохранения неверного ответа:", err));
-
-            setTimeout(() => {
                 setShakingButtons(prev => ({
                     ...prev,
-                    [questionId]: { ...prev[questionId], [stateKey]: '' }
+                    [questionId]: { ...prev[questionId], [stateKey]: 'shake-error' }
                 }));
-            }, 400);
-        }
+
+                setTimeout(() => {
+                    setShakingButtons(prev => ({
+                        ...prev,
+                        [questionId]: { ...prev[questionId], [stateKey]: '' }
+                    }));
+                }, 400);
+            }
+        })
+        .catch(err => {
+            setErrorMessage(err?.data?.message ? err.data.message : 'Ошибка при сохранении ответа');
+            return;
+        });
     };
+
+    let taskNumber = 0;
 
     return (
         <>
         {tasks.map((task, taskID) => {
             const mediaType = task.type_of_media.name;
-            const taskNumber = taskID + 1;
+            if (task.numeric) {
+                taskNumber += 1;
+            }
             const answerType = task.type_of_answer.name;
             const preMediaType = tasks[taskID - 1] ? tasks[taskID - 1].type_of_media.name : null;
                         
             if (mediaType === 'text') {
                 return (
-                    <TextPage 
+                    <TextPage
                         key={task.id} 
                         task={task} taskNumber={taskNumber} answerType={answerType} 
                         handleSelectChoice={handleSelectChoice} 
@@ -349,7 +337,7 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                 const block = task.task_options[0];
                 return (
                     <div key={block.id}>
-                        <h3 className="title">📝 {taskNumber + '. ' + task.description}</h3>
+                        <h3 className="title">{task.numeric ? '📝' + taskNumber + '. ' + task.description : task.description}</h3>
                         <AudioPage block={block} command={handleTheoryAudioPlay}/>
                     </div>
                 );
@@ -358,7 +346,7 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                 const block = task.task_options[0];
                 return (
                     <div key={block.id}>
-                        <h3 className="title">📝 {taskNumber + '. ' + task.description}</h3>                
+                        <h3 className="title">{task.numeric ? '📝' + taskNumber + '. ' + task.description : task.description}</h3>                
                         <VideoPage block={block}/>
                     </div>
                 );

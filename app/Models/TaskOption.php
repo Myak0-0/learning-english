@@ -11,7 +11,8 @@ class TaskOption extends Model
     protected $fillable = [
         'task_id',
         'content',
-        'order'
+        'order',
+        'numeric'
     ];
 
     public function task() { return $this->belongsTo(Task::class); }

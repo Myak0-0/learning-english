@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('type_of_media_id')->constrained('type_of_media');
             $table->integer('order')->default(0);
             $table->integer('page')->default(1);
+            $table->boolean('numeric')->default(true);
             $table->timestamps();
         });
     }
