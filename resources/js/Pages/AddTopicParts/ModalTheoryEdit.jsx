@@ -4,7 +4,7 @@ import '../../../css/modalTheoryEdit.scss';
 import axios from 'axios';
 import { router } from '@inertiajs/react';
 
-const ModalTaskEdit = ({ block, onClose }) => {
+const ModalTaskEdit = ({ block, allWords, onClose }) => {
     const type_of_media = block?.type_of_media?.name;
 
     const [content, setContent] = useState(block?.content?.content || "");
@@ -17,6 +17,35 @@ const ModalTaskEdit = ({ block, onClose }) => {
         return type_of_media == "table" && block?.content?.columns ? block.content.columns : [['', ''], ['', '']];
     });
 
+    const [selectedWordId, setSelectedWordId] = useState("");
+    const [wordsList, setWordsList] = useState(() => {
+        const wordsIds = new Set(
+            Array.isArray(content) ? content.map(id => Number(id)) : []
+        );
+        
+        return allWords
+            .filter(it => wordsIds.has(Number(it.id)))
+            .map(it => it.id);
+    });
+
+
+    const handleAddWord = (e) => {
+        e.preventDefault();
+        if (!selectedWordId) return;
+
+        const wordId = parseInt(selectedWordId);
+        if (wordsList.includes(wordId)) {
+            return;
+        }
+
+        setWordsList([...wordsList, wordId]);
+        setSelectedWordId("");
+    };
+
+    const handleRemoveWord = (idToRemove) => {
+        setWordsList(wordsList.filter(id => id !== idToRemove));
+    };
+
     const handleUpdateTheoryBlock = (e) => {
         e.preventDefault();
 
@@ -24,6 +53,8 @@ const ModalTaskEdit = ({ block, onClose }) => {
 
         if (type_of_media === 'table') {
             contentValue = { head: tableHead, columns: tableRows };
+        } else if (type_of_media == 'word') {
+            contentValue = { content: wordsList }
         } else {
             contentValue = { content: content };
         }
@@ -117,6 +148,45 @@ const ModalTaskEdit = ({ block, onClose }) => {
                                 >
                                     ➕ Добавить колонку
                                 </button>
+                            </div>
+                        </div>
+                    ) : type_of_media == "word" ? (
+                        <div>
+                            <label>Выбрать слово из базы словаря:</label>
+                            <div className="word-input-add">
+                                <select 
+                                    value={selectedWordId} 
+                                    onChange={(e) => setSelectedWordId(e.target.value)}
+                                >
+                                    <option value="">-- Выберите слово из списка --</option>
+                                    {allWords && allWords.map(w => (
+                                        <option key={w.id} value={w.id}>
+                                            {w.name} [{w.translation}]
+                                        </option>
+                                    ))}
+                                </select>
+                                <button type="button" className="btn-add-id" onClick={handleAddWord}>
+                                    Добавить
+                                </button>
+                            </div>
+
+                            <div className="words-block">
+                                <h5>Массив ID слов для отправки в JSON:</h5>
+                                {wordsList.length === 0 ? (
+                                    <p className="empty-array-msg">Слова не добавлены.</p>
+                                ) : (
+                                    <div className="list">
+                                        {wordsList.map(id => {
+                                            const wordObject = allWords.find(w => w.id === id);
+                                            return (
+                                                <span key={id}>
+                                                    {wordObject ? `${wordObject.name} (${id})` : `ID: ${id}`}
+                                                    <button type="button" onClick={() => handleRemoveWord(id)}>✕</button>
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (

@@ -366,6 +366,7 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
             {editingTheory && (
                 <ModalTheoryEdit 
                     block={editingTheory}
+                    allWords={allWords}
                     onClose={() => setEditingTheory(null)}
                 />
             )}
