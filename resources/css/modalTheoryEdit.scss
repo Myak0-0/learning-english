@@ -1,0 +1,13 @@
+@import 'colors.scss';
+
+.form-item-box {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $text-main;
+    }
+}

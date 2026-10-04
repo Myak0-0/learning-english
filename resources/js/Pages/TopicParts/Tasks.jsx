@@ -117,11 +117,13 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
                     let stateKey = (answerType === 'choice') ? ansRecord.option_for_task_option_id : 0;
                     if (!stateKey && answerType === 'choice') return;
 
+                    if (!updatedAnswers[qId]) updatedAnswers[qId] = {};
+                    updatedAnswers[qId][stateKey] = ansRecord.answer;
+
                     if (isAnsCorrect) {
-                        if (!updatedAnswers[qId]) updatedAnswers[qId] = {};
+                        
                         if (!updatedStates[qId]) updatedStates[qId] = {};
                         
-                        updatedAnswers[qId][stateKey] = ansRecord.answer;
                         if (answerType !== 'no-answer') {
                             updatedStates[qId][stateKey] = 'correct';
                         }
@@ -278,7 +280,7 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
             }
         })
         .catch(err => {
-            setErrorMessage(err?.data?.message ? err.data.message : 'Ошибка при сохранении ответа');
+            setErrorMessage(err?.response?.data?.message ? err?.response?.data?.message : 'Ошибка при сохранении ответа');
             return;
         });
     };

@@ -260,6 +260,18 @@ class AddTopicController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function theory_block_update(Request $request) {
+        $this->check_admin($request);
+
+        $content = $request->input('content'); 
+        $block_id = $request->input('block_id');
+
+        $theory_block = TheoryBlock::findOrFail($block_id);
+        $theory_block->update(['content' => $content]);
+
+        return response()->json(['message' => 'success']);
+    }
+
     public function theory_block_delete(Request $request) {
         $this->check_admin($request);
 

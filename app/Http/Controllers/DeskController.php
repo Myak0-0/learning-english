@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Events\DeskUpdateEvent;
 use App\Models\SectionDesk;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -28,9 +27,6 @@ class DeskController extends Controller
             ['section_id' => $topic_id, 'user_id' => $id_user],
             ['snapshot' => $snapshot]
         );
-
-        broadcast(new DeskUpdateEvent($topic_id, $id_user, $snapshot))->toOthers();
-
         return response()->json([
             'status' => 'success',
             'last_update' => $desk ? $desk->updated_at->valueOf() : 0

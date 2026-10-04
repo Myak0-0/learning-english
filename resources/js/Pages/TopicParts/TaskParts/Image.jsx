@@ -75,7 +75,7 @@ const Image = ({task, taskNumber, answerType,
                                             </ul>
                                         )}
 
-                                        {question.answer_options && isAdmin && (
+                                        {question.answer_options && question.answer_options.length > 0 && isAdmin && (
                                             <ul className="answer-box">
                                                 {question.answer_options.map((answer, answerId) => (                                                    
                                                     <li key={answerId}>{answer.answer}</li>                                                    

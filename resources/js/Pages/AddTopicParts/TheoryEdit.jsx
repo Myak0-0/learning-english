@@ -1,6 +1,8 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
 import '../../../css/theoryEdit.scss';
+import pencil from '../../../images/pencil.webp';
+import ModalTheoryEdit from "./ModalTheoryEdit";
 
 const TheoryEdit = ({ currentPage, existingBlocks, allWords,
                       mediaTypes, handleMoveBlock, topic, setErrorMessage
@@ -15,8 +17,12 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
     const [selectedWordId, setSelectedWordId] = useState("");
     const [wordsList, setWordsList] = useState([]);
     
-    const [tableHead, setTableHead] = useState("");
-    const [tableRows, setTableRows] = useState("");
+    const [tableHead, setTableHead] = useState(['', '']); 
+
+    const [tableRows, setTableRows] = useState([['', '']]);
+
+    const [editingTheory, setEditingTheory] = useState(null);
+
 
     const [isProcessing, setIsProcessing] = useState(false);
 
@@ -69,17 +75,12 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
         } else if (mediaType === "word") {
             formData.append("content", JSON.stringify({ content: wordsList }));
         } else if (mediaType === "table") {
-            const headArray = tableHead.split(";").map(s => s.trim()).filter(Boolean);
-            const columnsArray = tableRows.split("\n").map(row => 
-                row.split(";").map(cell => cell.trim()).filter(Boolean)
-            ).filter(arr => arr.length > 0);
-
-            formData.append("content", JSON.stringify({ head: headArray, columns: columnsArray }));
+            formData.append("content", JSON.stringify({ head: tableHead, columns: tableRows }));
         } else if (mediaType === "image" && imageFile) {
             formData.append("file", imageFile);
         } else if (mediaType === "audio" && audioFile) {
             formData.append("file", audioFile);
-        }                
+        }
 
         axios.post("/section/theory-block/add", formData, {
             headers: { "Content-Type": "multipart/form-data" }
@@ -88,8 +89,8 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
             setTextContent("");
             setVideoUrl("");
             setWordsList([]);
-            setTableHead("");
-            setTableRows("");
+            setTableHead(['', '']);
+            setTableRows([['', '']]);
             setImageFile(null);
             setAudioFile(null);
             setIsProcessing(false)
@@ -175,6 +176,10 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
                             <div className="actions">
                                 <button className="move" disabled={bIdx === 0} onClick={() => handleMoveBlock(block.id, 'up', 'theory')} title="Выше">▲</button>
                                 <button className="move" disabled={bIdx === existingBlocks.length - 1} onClick={() => handleMoveBlock(block.id, 'down', 'theory')} title="Ниже">▼</button>
+
+                                <button className="edit" onClick={() => setEditingTheory(block)} title="Редактировать текст">
+                                    <img src={pencil} alt="карандаш" />
+                                </button>
                                 <button className="delete" onClick={() => handleDeleteBlock(block.id)}>Удалить</button>
                             </div>
                         </div>
@@ -276,33 +281,94 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
                 )}
 
                 {mediaType === "table" && (
-                    <div className="add-table">
-                        <div className="sub-field-item">
-                            <label>Шапка (элементы через точку с запятой):</label>
-                            <input 
-                                type="text" 
-                                placeholder="Кто?; Кого?; Кому?"
-                                value={tableHead} 
-                                onChange={(e) => setTableHead(e.target.value)} 
-                                required 
-                            />
-                        </div>
-                        <div className="sub-field-item">
-                            <label>Строки (ячейки через точку с запятой, новые строки через Enter):</label>
-                            <textarea 
-                                placeholder="Я; Меня; Мне&#10;Ты; Тебя; Тебе" 
-                                value={tableRows} 
-                                onChange={(e) => setTableRows(e.target.value)} 
-                                required 
-                            />
+                    <div className="add-table-dynamic">
+                        <label className="table-section-title">Конструктор таблицы:</label>
+                        
+                        <table className="dynamic-inputs-table">
+                            <thead>
+                                <tr>
+                                    {tableHead.map((headCell, colIdx) => (
+                                        <th key={`head-${colIdx}`}>
+                                            <input 
+                                                type="text" 
+                                                placeholder={`Колонка ${colIdx + 1}`}
+                                                value={headCell}
+                                                onChange={(e) => {
+                                                    const newHead = [...tableHead];
+                                                    newHead[colIdx] = e.target.value;
+                                                    setTableHead(newHead);
+                                                }}
+                                                required
+                                            />
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tableRows.map((row, rowIdx) => (
+                                    <tr key={`row-${rowIdx}`}>
+                                        {row.map((cellValue, colIdx) => (
+                                            <td key={`cell-${rowIdx}-${colIdx}`}>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Ячейка"
+                                                    value={cellValue}
+                                                    onChange={(e) => {
+                                                        const newRows = tableRows.map((r, rIdx) => 
+                                                            rIdx === rowIdx 
+                                                                ? r.map((c, cIdx) => cIdx === colIdx ? e.target.value : c)
+                                                                : r
+                                                        );
+                                                        setTableRows(newRows);
+                                                    }}
+                                                    required
+                                                />
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        <div className="table-controls-buttons">
+                            <button 
+                                type="button" 
+                                className="btn-add-row"
+                                onClick={() => {
+                                    const newRow = Array(tableHead.length).fill('');
+                                    setTableRows([...tableRows, newRow]);
+                                }}
+                            >
+                                ➕ Добавить строку
+                            </button>
+
+                            <button 
+                                type="button" 
+                                className="btn-add-col"
+                                onClick={() => {
+                                    setTableHead([...tableHead, '']);
+                                    const newRows = tableRows.map(row => [...row, '']);
+                                    setTableRows(newRows);
+                                }}
+                            >
+                                ➕ Добавить колонку
+                            </button>
                         </div>
                     </div>
                 )}
+
 
                 <button className="save" disabled={isProcessing}>
                     {isProcessing ? 'Сохранение...' : '🚀 Сохранить блок теории'}
                 </button>
             </form>
+
+            {editingTheory && (
+                <ModalTheoryEdit 
+                    block={editingTheory}
+                    onClose={() => setEditingTheory(null)}
+                />
+            )}
         </div>
         </>
     );

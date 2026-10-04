@@ -77,6 +77,9 @@ Route::post('/section/topic/move', [AddTopicController::class, 'topic_move'])
 Route::post('/section/theory-block/add', [AddTopicController::class, 'theory_block_add'])
     ->middleware(['auth', 'verified']);
 
+Route::post('/section/theory-block/update', [AddTopicController::class, 'theory_block_update'])
+    ->middleware(['auth', 'verified']);
+
 Route::post('/section/theory-block/delete', [AddTopicController::class, 'theory_block_delete'])
     ->middleware(['auth', 'verified']);
 
