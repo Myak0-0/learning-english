@@ -8,7 +8,7 @@ class AudioController extends Controller
 {
     public function streamAudio(Request $request, $filename)
     {    
-        $path = base_path('audios/' . $filename); 
+        $path = public_path('audios/' . $filename); 
 
         if (!file_exists($path)) {
             abort(404, 'Файл не найден в public/');
