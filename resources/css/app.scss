@@ -16,7 +16,7 @@ html {
 a {
     text-decoration: none;
 }
-input, textarea, button {
+input, textarea, button, select {
     outline: none;
 }
 
@@ -33,6 +33,7 @@ input, textarea, button {
     width: fit-content;
     max-width: 350px;
     text-align: center;
+    z-index: 1000;
 
     &.visible {        
         animation: showError 4s;

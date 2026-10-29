@@ -281,6 +281,9 @@ const Tasks = ({ tasks, currentUserId, command: handleTheoryAudioPlay, listIds, 
         })
         .catch(err => {
             setErrorMessage(err?.response?.data?.message ? err?.response?.data?.message : 'Ошибка при сохранении ответа');
+            setTimeout(() => {
+                setErrorMessage(null);
+            }, 4000)
             return;
         });
     };

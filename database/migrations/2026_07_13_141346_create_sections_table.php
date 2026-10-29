@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('is_topic')->default(false);
             $table->integer('order')->default(0);
             $table->foreignId('link_id')->nullable()->constrained('sections')->nullOnDelete();
+            $table->foreignId('user_creator')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

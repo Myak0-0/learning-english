@@ -28,6 +28,8 @@ class User extends Authenticatable
         'name',
         'birth_date',
         'english_level',
+        'user_info',
+        'user_creator'
     ];
 
     /**
@@ -54,7 +56,12 @@ class User extends Authenticatable
     }
 
     public function admin() { return $this->hasOne(UserAdmin::class)->exists(); }
+    public function role() { return $this->hasOne(UserAdmin::class, 'user_id'); }
     public function rights() { return $this->hasMany(UserRight::class); }
+    public function teacherSubscriptions() { return $this->hasMany(TeacherSubscription::class); }
+    public function timeOfLessons() { return $this->hasMany(TimeOfLesson::class, 'teacher_id'); }
+    public function teacherStudents() { return $this->hasMany(TeacherStudent::class, 'teacher_id'); }
+    public function studentTeacher() { return $this->hasOne(TeacherStudent::class, 'student_id'); }
     public function timeOfRepeatings() { return $this->hasMany(UserTimeOfRepeating::class); }
     public function taskAnswers() { return $this->hasMany(UserTaskAnswer::class); }
 }

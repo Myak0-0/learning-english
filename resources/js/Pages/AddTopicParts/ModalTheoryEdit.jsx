@@ -171,7 +171,7 @@ const ModalTaskEdit = ({ block, allWords, onClose }) => {
                             </div>
 
                             <div className="words-block">
-                                <h5>Массив ID слов для отправки в JSON:</h5>
+                                <h5>Массив слов:</h5>
                                 {wordsList.length === 0 ? (
                                     <p className="empty-array-msg">Слова не добавлены.</p>
                                 ) : (
@@ -193,7 +193,7 @@ const ModalTaskEdit = ({ block, allWords, onClose }) => {
                         <div className="form-task-description">
                             <div className="form-item-box">
                                 <label>Описание задания:</label>
-                                <input placeholder="Description" type="text" value={content} onChange={(e) => setContent(e.target.value)} required />
+                                <textarea placeholder="Description" type="text" value={content || ''} onChange={(e) => setContent(e.target.value)} required></textarea>
                             </div>
                         </div>
                     )}

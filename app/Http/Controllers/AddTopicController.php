@@ -53,6 +53,14 @@ class AddTopicController extends Controller
 
         $topic = Section::findOrFail($section_id);
 
+        $user = Auth::user();
+        $role = $user->role->type_of_right;
+        if ($role == 'teacher') {
+            if ($user->id != $topic->user_creator) {
+                abort(403,'You are not available to edit this topic');
+            }
+        }
+
         $existingBlocks = TheoryBlock::where('section_id', $section_id)
             ->where('page', $page)
             ->orderBy('order')
@@ -123,14 +131,17 @@ class AddTopicController extends Controller
         $maxOrder = Section::where('parent_id', $validated['parent_id'])->max('order');
         
         $nextOrder = is_null($maxOrder) ? 0 : $maxOrder + 1;
+
+        $user_creator = Auth::user()->id;
         
         Section::create([
-            'id'        => $id_section,
-            'title'     => $validated['title'],
-            'is_topic'  => $validated['is_topic'],
-            'parent_id' => $validated['parent_id'],
-            'order'     => $nextOrder,
-            'link_id'   => $link
+            'id'           => $id_section,
+            'title'        => $validated['title'],
+            'is_topic'     => $validated['is_topic'],
+            'parent_id'    => $validated['parent_id'],
+            'order'        => $nextOrder,
+            'link_id'      => $link,
+            'user_creator' => $user_creator
         ]);
         return redirect()->back();
     }
@@ -244,7 +255,7 @@ class AddTopicController extends Controller
         elseif ($validated['type'] === 'audio' && $request->hasFile('file')) {            
             $file = $request->file('file');
             $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('audios/'), $fileName);
+            $file->move(base_path('audios/'), $fileName);
             
             $contentData = ['content' => $fileName];
         }
@@ -282,11 +293,11 @@ class AddTopicController extends Controller
         $block = TheoryBlock::with('typeOfMedia')->findOrFail($validated['block_id']);
 
         if ($block->typeOfMedia->name === 'image' && !empty($block->content['content'])) {
-            $filePath = public_path('images/theory/' . $block->content['content']);
+            $filePath = base_path('images/theory/' . $block->content['content']);
             if (file_exists($filePath)) @unlink($filePath);
         } 
         elseif ($block->typeOfMedia->name === 'audio' && !empty($block->content['content'])) {
-            $filePath = public_path('audios/' . $block->content['content']);
+            $filePath = base_path('audios/' . $block->content['content']);
             if (file_exists($filePath)) @unlink($filePath);
         }
 
@@ -361,7 +372,7 @@ class AddTopicController extends Controller
                         }
                     } else {
                         $fileName = time() . '_' . rand(1000, 9999) . '.' . $file->getClientOriginalExtension();
-                        $file->move(public_path('audios'), $fileName);
+                        $file->move(base_path('audios'), $fileName);
                     }
                     
                     $finalContent = $qData['has_gap'] === 'true' && $validated['media_type'] === 'image' ? $fileName . " (___)" : $fileName;
@@ -429,9 +440,9 @@ class AddTopicController extends Controller
     private function processAndConvertImage($sourceFile, $prefix, $folder)
     {
         if ($folder === 'task')
-            $destinationDir = public_path('images/task');
+            $destinationDir = base_path('images/task');
         else if ($folder === 'theory')
-            $destinationDir = public_path('images/theory');
+            $destinationDir = base_path('images/theory');
         else {
             return null;
         }
@@ -501,9 +512,9 @@ class AddTopicController extends Controller
                 $cleanFileName = str_replace(' (___)', '', $option->content);
 
                 if ($block->typeOfMedia->name === 'image') {
-                    $filePath = public_path('images/task/' . $cleanFileName);
+                    $filePath = base_path('images/task/' . $cleanFileName);
                 } else {
-                    $filePath = public_path('audios/' . $cleanFileName);
+                    $filePath = base_path('audios/' . $cleanFileName);
                 }
 
                 if (file_exists($filePath)) {
@@ -530,12 +541,12 @@ class AddTopicController extends Controller
 
         if ($block->typeOfMedia->name === 'image' && !empty($block->content['content'])) {
             $cleanFileName = str_replace(' (___)', '', $taskOption->content);
-            $filePath = public_path('images/task/' . $cleanFileName);
+            $filePath = base_path('images/task/' . $cleanFileName);
             if (file_exists($filePath)) @unlink($filePath);
         } 
         elseif ($block->typeOfMedia->name === 'audio' && !empty($block->content['content'])) {
             $cleanFileName = str_replace(' (___)', '', $taskOption->content);
-            $filePath = public_path('audios/' . $cleanFileName);
+            $filePath = base_path('audios/' . $cleanFileName);
             if (file_exists($filePath)) @unlink($filePath);
         }
 

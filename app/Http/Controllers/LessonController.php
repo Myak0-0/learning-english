@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Section;
+use App\Models\UserAdmin;
 use App\Models\UserRight;
 use App\Models\UserTaskAnswer;
 use App\Models\UserTimeOfRepeating;
@@ -16,18 +17,51 @@ class LessonController extends Controller
 {
     public function showFolder($parentId = null)
     {
-        $is_admin = Auth::user()->admin();
+        $user = Auth::user();
+        $is_admin = $user->admin();
         $link_topic = '';
 
         if ($is_admin) {
-            $items = Section::where('parent_id', $parentId)
-                ->orderBy('is_topic')
+            $role = $user->role->type_of_right;
+
+            $adminIds = UserAdmin::where('type_of_right', 'admin')->pluck('user_id')->toArray();
+
+            $query = Section::where('parent_id', $parentId);
+
+            if ($role === 'teacher') {
+                $query->where(function($q) use ($adminIds) {
+                    $q->whereIn('user_creator', $adminIds)
+                      ->orWhereNull('user_creator')
+                      ->orWhere('user_creator', Auth::id());
+                });
+            }
+
+            $items = $query->orderBy('is_topic')
                 ->orderBy('order')
                 ->get();
 
+            $items = $items->map(function ($item) use ($role) {
+                if ($role === 'admin') {
+                    $item->editing_is_permitted = true;
+                } else {
+                    $item->editing_is_permitted = ($item->user_creator == Auth::id());
+                }
+                return $item;
+            });
+
+            $linkTopicQuery = Section::where('is_topic', true);
+            
+            if ($role === 'teacher') {
+                $linkTopicQuery->where(function($q) use ($adminIds) {
+                    $q->whereIn('user_creator', $adminIds)
+                      ->orWhereNull('user_creator')
+                      ->orWhere('user_creator', Auth::id());
+                });
+            }
+
             $link_topic = Section::where('is_topic', true)->get(['id', 'title']);
         } else {
-            $currentUser = Auth::user();
+            $currentUser = $user;
 
             if ($parentId) {
                 $isThereRight = UserRight::where('section_id', $parentId)->where('user_id', $currentUser->id)->exists();

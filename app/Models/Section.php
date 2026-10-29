@@ -15,7 +15,8 @@ class Section extends Model
         'parent_id',
         'is_topic',
         'order',
-        'link_id'
+        'link_id',
+        'user_creator'
     ];
 
     public function parent() { return $this->belongsTo(Section::class, 'parent_id'); }
@@ -24,4 +25,5 @@ class Section extends Model
     public function rights() { return $this->hasMany(UserRight::class); }
     public function tasks() { return $this->hasMany(Task::class); }
     public function theoryBlocks() { return $this->hasMany(TheoryBlock::class); }
+    public function user_role() { return $this->hasOne(UserAdmin::class, 'user_id'); }
 }

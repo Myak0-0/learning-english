@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('order')->default(0);
             $table->integer('page')->default(1);
             $table->boolean('numeric')->default(true);
+            $table->boolean('is_homework')->default(false);
             $table->timestamps();
         });
     }

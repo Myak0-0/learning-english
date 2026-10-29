@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\AnswerOption;
 use App\Models\Task;
+use App\Models\TimeOfLesson;
 use Illuminate\Http\Request;
 use App\Models\UserTaskAnswer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class AnswerController extends Controller
@@ -17,14 +19,16 @@ class AnswerController extends Controller
 
         $str = trim(mb_strtolower($text, 'UTF-8'));
 
+        $str = str_replace(['’', '`', '‘'], "'", $str);
+
         $patterns = [
-            "/\bn't\b/i" => " not",
-            "/\b'm\b/i"  => " am",
-            "/\b're\b/i" => " are",
-            "/\b's\b/i"  => " is",
-            "/\b'll\b/i" => " will",
-            "/\b've\b/i" => " have",
-            "/\b'd\b/i"  => " would"
+            "/n't/" => " not",
+            "/'m/"  => " am",
+            "/'re/" => " are",
+            "/'s/"  => " is",
+            "/'ll/" => " will",
+            "/'ve/" => " have",
+            "/'d/"  => " would"
         ];
         $str = preg_replace(array_keys($patterns), array_values($patterns), $str);
 
@@ -50,6 +54,73 @@ class AnswerController extends Controller
         } else {
             $user_id = Auth::user()->id;
         }
+
+        $startDate = Carbon::now('UTC')->subDay()->startOfDay();
+        $endDate = Carbon::now('UTC')->addDays(2)->endOfDay();
+
+        $lessons = TimeOfLesson::where('student_id', $user_id)
+            ->whereBetween('date_lesson', [$startDate, $endDate])
+            ->get();
+
+        $canSubmit = false;
+
+        foreach ($lessons as $lesson) {
+            $lessonStartUTC = Carbon::parse($lesson->date_lesson, $lesson->time_zone)->utc();
+            
+            $allowedStart = $lessonStartUTC->copy()->subMinutes(15);
+            
+            list($hours, $minutes, $seconds) = explode(':', $lesson->lesson_duration);
+            
+            $allowedEnd = $lessonStartUTC->copy()
+                ->addHours((int)$hours)
+                ->addMinutes((int)$minutes)
+                ->addSeconds((int)$seconds)
+                ->addMinutes(15);
+
+            $nowUTC = Carbon::now('UTC');
+
+            if ($nowUTC->between($allowedStart, $allowedEnd)) {
+                $canSubmit = true;
+                break; 
+            }
+        }
+
+        if (!$canSubmit) {
+            return response()->json([
+                'message' => 'Access denied. There are no lessons right now'
+            ], 403);
+        }
+
+
+
+        $unpaidLessons = TimeOfLesson::where('student_id', $user_id)
+            ->where('is_paid', false)
+            ->get();
+
+        $nowInUtc = Carbon::now('UTC');
+        $unpaidPastLessonsCount = 0;
+
+        foreach ($unpaidLessons as $lesson) {
+            $lessonStartInUtc = Carbon::parse($lesson->date_lesson, $lesson->time_zone)->setTimezone('UTC');
+
+            list($hours, $minutes, $seconds) = explode(':', $lesson->lesson_duration);
+            $lessonEndInUtc = $lessonStartInUtc->copy()
+                ->addHours((int)$hours)
+                ->addMinutes((int)$minutes)
+                ->addSeconds((int)$seconds);
+
+            if ($lessonEndInUtc->lessThan($nowInUtc)) {
+                $unpaidPastLessonsCount++;
+            }
+        }
+
+        if ($unpaidPastLessonsCount >= 2) {
+            return response()->json([
+                'message' => "Student has $unpaidPastLessonsCount unpaid lessons, answering is forbidden"
+            ], 403);
+        }
+
+
 
         $task = Task::findOrFail($validated['task_id']);
         $typeOfAnswer = $task->typeOfAnswer->name;
@@ -119,11 +190,11 @@ class AnswerController extends Controller
         }
 
         $is_correct = false;
+        $userAnswerCleaned = $this->cleanText($validated['answer']);
+
         if ($typeOfAnswer == 'choice') {
             $real_answers = AnswerOption::where('task_option_id', $validated['task_option_id'])
                             ->where('option_for_task_option_id', $validated['option_for_task_option_id'])->pluck('answer')->toArray();
-            
-            $userAnswerCleaned = $this->cleanText($validated['answer']);
 
             foreach ($real_answers as $answer) {
                 if ($userAnswerCleaned === $this->cleanText($answer)) {
@@ -133,8 +204,6 @@ class AnswerController extends Controller
             }
         } elseif ($typeOfAnswer == 'input') {
             $real_answers = AnswerOption::where('task_option_id', $validated['task_option_id'])->pluck('answer')->toArray();
-            
-            $userAnswerCleaned = $this->cleanText($validated['answer']);
 
             foreach ($real_answers as $answer) {
                 if ($userAnswerCleaned === $this->cleanText($answer)) {

@@ -87,7 +87,7 @@ const Lessons = ({ items, currentFolder, is_admin, link_topic }) => {
                                     
                                     <p className="info">{item.title}</p>
 
-                                    {is_admin &&
+                                    {is_admin && item.editing_is_permitted &&
                                         <>
                                         <button className='delete' onClick={(e) => handle_deliting(e, item.id)}>✕</button>
                                         

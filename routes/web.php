@@ -5,6 +5,7 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\DeskController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserSelectController;
 use App\Http\Controllers\WordController;
 use Illuminate\Foundation\Application;
@@ -20,7 +21,30 @@ Route::get('/', function () {
     ]);
 });
 
+Route::post('/lesson-link', [ScheduleController::class, 'lesson_link'])
+    ->middleware(['auth', 'verified']);
+
+
+
 Route::post('/user/create', [UserSelectController::class, 'user_create'])
+    ->middleware(['auth', 'verified']);
+
+Route::post('/user/delete', [UserSelectController::class, 'user_delete'])
+    ->middleware(['auth', 'verified']);
+
+Route::post('/user/teacher-student', [UserSelectController::class, 'teacher_student'])
+    ->middleware(['auth', 'verified']);
+
+
+
+
+Route::post('/schedule/create', [ScheduleController::class, 'schedule_create'])
+    ->middleware(['auth', 'verified']);
+
+Route::post('/schedule/delete', [ScheduleController::class, 'schedule_delete'])
+    ->middleware(['auth', 'verified']);
+
+Route::post('/schedule/update', [ScheduleController::class, 'schedule_update'])
     ->middleware(['auth', 'verified']);
 
 
@@ -136,6 +160,10 @@ Route::post('/words/search', [WordController::class, 'search_word'])
 Route::post('/words/update-translation', [WordController::class, 'update_translation'])
     ->middleware(['auth', 'verified']);    
 
+
+
+Route::get('/schedule-show', [ScheduleController::class, 'schedule_show'])
+    ->middleware(['auth', 'verified'])->name('schedule');
 
 
 

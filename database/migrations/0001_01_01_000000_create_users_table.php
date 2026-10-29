@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->date('birth_date')->nullable();
             $table->string('english_level')->nullable();
+            $table->string('user_info')->nullable();
+            $table->foreignId('user_creator')->nullable()->constrained('users')->nullOnDelete();
 
             $table->rememberToken();
             $table->timestamps();

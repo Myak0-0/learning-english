@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserAdmin extends Model
 {
-    protected $fillable = ['user_id'];
+    protected $fillable = ['user_id', 'type_of_right'];
 
     public function user() { return $this->belongsTo(User::class); }
 }

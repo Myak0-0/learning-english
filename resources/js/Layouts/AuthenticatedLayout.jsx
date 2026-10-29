@@ -17,6 +17,8 @@ const AuthenticatedLayout = ({ header, children }) => {
     const [isFocused, setIsFocused] = useState(false);
     const searchContainerRef = useRef(null);
 
+    const [lessonLink, setLessonLink] = useState('');
+
     const playAudio = (audioFile) => {
         if (!audioFile) return;
         if (currentAudio) {
@@ -115,6 +117,21 @@ const AuthenticatedLayout = ({ header, children }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        const checkLink = () => {
+            axios.post('/lesson-link')
+                .then(response => {
+                    setLessonLink(response?.data?.lesson_link || '');
+                });
+        };
+
+        checkLink();
+        
+        const interval = setInterval(checkLink, 60000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="app-layout">
             <aside className={`sidebar ${menuIsOpen && 'open'}`}>
@@ -133,11 +150,14 @@ const AuthenticatedLayout = ({ header, children }) => {
                         🎯 Занятия
                     </Link>
                     <Link href={route('words')} className={route().current('words') ? 'active' : ''}>
-                        Повторение слов
+                        🔄 Повторение слов
+                    </Link>
+                    <Link href={route('schedule')} className={route().current('schedule') ? 'active' : ''}>
+                        📅 Расписание
                     </Link>
                     {auth.user?.is_admin && auth.user?.is_admin &&
                         <Link href={route('choose-user')} className={route().current('choose-user') ? 'active' : ''}>
-                            Выбрать пользователя
+                            ⚙️ Выбрать пользователя
                         </Link>
                     }
                 </nav>
@@ -205,6 +225,14 @@ const AuthenticatedLayout = ({ header, children }) => {
                                 )}
                             </div>
                         </div>
+
+                        {lessonLink && route().current('lessons') && (
+                            <div className='enter_the_lesson'>
+                                <button onClick={() => window.open(lessonLink, '_blank')}>
+                                    Войти на урок
+                                </button>
+                            </div>
+                        )}
                     </header>
                 )}
                 

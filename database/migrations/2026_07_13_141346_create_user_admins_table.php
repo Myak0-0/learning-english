@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('user_admins', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('type_of_right');
             $table->timestamps();
         });
     }

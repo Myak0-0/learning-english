@@ -13,7 +13,8 @@ class Task extends Model
         'type_of_media_id',
         'order',
         'page',
-        'numeric'
+        'numeric',
+        'is_homework'
     ];
 
     public function section() { return $this->belongsTo(Section::class); }

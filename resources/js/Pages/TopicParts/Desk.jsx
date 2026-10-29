@@ -99,7 +99,7 @@ const Desk = ({ topicId }) => {
     return (
         <div className="desk">
             <Tldraw
-                licenseKey="tldraw-2026-10-17/WyJnTWVHbW9TciIsWyIqIl0sMTYsIjIwMjYtMTAtMTciXQ.GOjoW5RZ3il+zw4FO0CSY4t4nuZ9jVFc8qe9opHyZmLgPUheB2zYWVQmJz27/0WM3wMrN0aax+2pcVVcia2Npg"
+                licenseKey="tldraw-vladislav-kohas-2027-10-12/WyJSZXRob1VLdSIsWyIqLmxlYXJuaW5nLWVuZy5ydSJdLDksIjIwMjctMTAtMTIiXQ.AklAjTsXrwVTzBbj7LivMT+tJmgijl/7tQfNd0v5LYNlLaGaDaV0G7dpY2uZF7GP4RvY3b61/qP+2cagIIArfA"
                 onMount={(editorInstance) => {
                     setEditor(editorInstance);
                 }}

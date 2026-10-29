@@ -260,7 +260,7 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
                         </div>
 
                         <div className="words-block">
-                            <h5>Массив ID слов для отправки в JSON:</h5>
+                            <h5>Массив слов:</h5>
                             {wordsList.length === 0 ? (
                                 <p className="empty-array-msg">Слова не добавлены.</p>
                             ) : (
@@ -298,7 +298,6 @@ const TheoryEdit = ({ currentPage, existingBlocks, allWords,
                                                     newHead[colIdx] = e.target.value;
                                                     setTableHead(newHead);
                                                 }}
-                                                required
                                             />
                                         </th>
                                     ))}

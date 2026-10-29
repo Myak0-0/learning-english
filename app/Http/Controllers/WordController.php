@@ -134,7 +134,7 @@ class WordController extends Controller
             $file = $request->file('audio');
             $fileName = time() . '_' . rand(0000, 9999) . '.' . $file->getClientOriginalExtension();
 
-            $file->move(public_path('word-audios'), $fileName);
+            $file->move(base_path('word-audios'), $fileName);
         }
 
         $id = Word::create([
@@ -227,7 +227,7 @@ class WordController extends Controller
 
         if ($word) {
             if ($word->audio) {
-                $absolutePath = public_path('word-audios/' . $word->audio);
+                $absolutePath = base_path('word-audios/' . $word->audio);
                 
                 if (file_exists($absolutePath)) {
                     unlink($absolutePath);
